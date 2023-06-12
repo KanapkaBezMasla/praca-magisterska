@@ -2,17 +2,21 @@ package com.example.turystycznezaglebie;
 
 import java.util.ArrayList;
 
-public class Greedy {
-    private TravelData travelData;
-    private ArrayList<Integer>  visitedAttractions = new ArrayList<Integer>();
+public class Greedy extends Algorithm{
 
     public Greedy(TravelData td){
-        travelData = td;
+        super(td);
     }
 
     public ArrayList getVisitedAttractions() {
         return visitedAttractions;
     }
+
+    @Override
+    public int findWay(int startPoint0, int timeMax, long calculation_time){
+        return findWay(startPoint0, timeMax);
+    }
+
 
     public int findWay(int startPoint, int timeMax){
         timeMax *= 60;
@@ -48,6 +52,11 @@ public class Greedy {
         }
 
         return collectedStars;
+    }
+
+    @Override
+    public int findWayMultimodal(int startPoint0, int timeMax, long calculation_time) {
+        return 0;
     }
 }
 

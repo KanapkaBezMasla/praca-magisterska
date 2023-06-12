@@ -62,8 +62,8 @@ public class FirstImprovementHillClimber {
         boolean [] isVisitedAttractionTable = new boolean[travelData.walking_matrix.length];
         for (int j=0; j<travelData.walking_matrix.length; j++)
             isVisitedAttractionTable[j] = false;
-        for (Iterator<Integer> iter = visitedAttractions.iterator(); iter.hasNext(); )
-            isVisitedAttractionTable[iter.next()] = true;
+        for (Integer visitedAttraction : visitedAttractions)
+            isVisitedAttractionTable[visitedAttraction] = true;
 
 
         boolean restart = false;
@@ -119,7 +119,7 @@ public class FirstImprovementHillClimber {
                                 if (newTime <= prevTime || timeMax > currentPathTime - prevTime + newTime) {
                                     visitedAttractions.set(i, j);
                                     isVisitedAttractionTable[j] = true;
-                                    isVisitedAttractionTable[i] = false;
+                                    isVisitedAttractionTable[bi] = false;
                                     currentPathTime -= prevTime - newTime;
                                     restart = true;
                                 }
@@ -135,7 +135,7 @@ public class FirstImprovementHillClimber {
                                     if(newFitness>oldFitness){
                                         visitedAttractions.set(i, j);
                                         isVisitedAttractionTable[j] = true;
-                                        isVisitedAttractionTable[i] = false;
+                                        isVisitedAttractionTable[bi] = false;
                                         currentPathTime -= prevTime - newTime;
                                         restart = true;
                                     }
@@ -175,4 +175,6 @@ public class FirstImprovementHillClimber {
         }
         return visitedAttractions;
     }
+
+    
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 public class RandomAlg extends Algorithm{
     private ArrayList<Integer> visitedAttractionsIter = new ArrayList<Integer>();
-    private int collectedStars;
 
     public RandomAlg(TravelData td) {
         super(td);
@@ -23,7 +22,7 @@ public class RandomAlg extends Algorithm{
         int travelTimeLeft = timeMax;
         int collectedStarsIter = travelData.stars[startPoint];
         ArrayList<Integer> attractionsToVisit = new ArrayList<Integer>();
-        ArrayList<Integer> visitedAttractionsIter = new ArrayList<Integer>();
+        visitedAttractionsIter = new ArrayList<Integer>();
         for (int i = 0; i < travelData.walking_matrix.length; i++)
             attractionsToVisit.add(i);
 
@@ -43,9 +42,14 @@ public class RandomAlg extends Algorithm{
             startPoint = nextCity;
             collectedStarsIter += travelData.stars[nextCity];
         }
+
+        if (visitedAttractions.size()==0)
+            visitedAttractions = visitedAttractionsIter;
+
         return collectedStarsIter;
     }
 
+    @Override
     public int findWay(int startPoint0, int timeMax, long calculation_time){
         long start = System.nanoTime();
         long timeElapsed;
@@ -57,11 +61,15 @@ public class RandomAlg extends Algorithm{
                 collectedStars = collectedStarsIter;
                 visitedAttractions = visitedAttractionsIter;
             }
-            visitedAttractionsIter.clear();
             long finish = System.nanoTime();
             timeElapsed = finish - start;
         }while(timeElapsed < calculation_time);
 
         return collectedStars;
+    }
+
+    @Override
+    public int findWayMultimodal(int startPoint0, int timeMax, long calculation_time) {
+        return 0;
     }
 }

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -28,10 +29,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Integer [][] walk_matrix;
         walk_matrix = fileReader.readMatrix(getApplicationContext(), "data33.txt");
         TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating);
+
+        SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99);
+        int sa_stars = sa.findWay(0, 120, 5);
         Greedy greedy = new Greedy(travelData);
         int greedy_stars = greedy.findWay(0, 120);
         RandomAlg randomAlg = new RandomAlg(travelData);
-        int rand_stars = randomAlg.findWay(0, 120, 1);
+        int rand_stars = randomAlg.findWay(0, 120, 5);
         FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);
         fihc.improve(randomAlg.getVisitedAttractions(),120);
 

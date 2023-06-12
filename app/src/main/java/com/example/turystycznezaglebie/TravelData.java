@@ -4,11 +4,19 @@ public class TravelData {
     public Integer [][] walking_matrix;     //czas podróży w sekundach
     public Integer [] visit_time;           //czas zwiedzania w minutach
     public Integer [] stars;
+    public Integer [][] car_matrix;
 
     public TravelData(Integer [][]wm, Integer [] vt, Integer [] st){
         walking_matrix = wm;
         visit_time = vt;
         stars = st;
+    }
+
+    public TravelData(Integer [][]wm, Integer [] vt, Integer [] st, Integer [][] cm){
+        walking_matrix = wm;
+        visit_time = vt;
+        stars = st;
+        car_matrix = cm;
     }
 
     public float fitness(int start, int destination, int time_left){
