@@ -1,43 +1,42 @@
 package com.example.turystycznezaglebie;
-import androidx.fragment.app.FragmentActivity;
+
 import android.os.Bundle;
+
+import androidx.fragment.app.FragmentActivity;
+
+import com.example.turystycznezaglebie.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.example.turystycznezaglebie.databinding.ActivityMapsBinding;
-
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-    private Integer [] visit_time =  {15, 1, 3, 2, 4, 60, 25, 15, 60, 5, 50, 4, 20, 5, 20, 10, 25, 4, 4, 15, 45, 3, 2, 20, 5, 20, 3, 20, 120, 20, 10, 4, 90};
-    private Integer [] stars_rating = {5, 2, 3, 2, 3,  4,  3,  2,  5, 2,  3, 1,  3, 2,  4,  1,  3, 1, 3,  2,  2, 1, 1,  2, 2,  5, 1,  1,   3,  1,  2, 1, 4};
+    private Integer [] visit_time =  {15, 1, 3, 2, 4, 60, 25, 15, 60, 5, 50, 4, 20, 5, 20, 10, 25, 4, 4, 15, 45, 3, 2, 20, 5, 20, 3, 20, 120, 20, 10, 4, 90, 30, 10, 40, 7, 1, 2, 13, 8, 2, 2, 25, 3, 30, 30, 12, 45, 15, 4, 20};
+    private Integer [] stars_rating = {5, 2, 3, 2, 3,  4,  3,  2,  5, 2,  3, 1,  3, 2,  4,  1,  3, 1, 3,  2,  2, 1, 1,  2, 2,  5, 1,  1,   3,  1,  2, 1, 4,  5,  3,  3,  2, 2, 1, 5,  4, 2, 3, 5,  2, 5,  4,  2,  5,  3,  2, 5};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         ReadTxtFile fileReader = new ReadTxtFile();
         Integer [][] walk_matrix;
-        walk_matrix = fileReader.readMatrix(getApplicationContext(), "data33.txt");
+        walk_matrix = fileReader.readMatrix(getApplicationContext(), "data13A.txt", 13);
         TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating);
+        Experiment ex= new Experiment();
+        ex.greedy_single(getApplicationContext(), visit_time, stars_rating);
 
-        SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99);
-        int sa_stars = sa.findWay(0, 120, 5);
-        Greedy greedy = new Greedy(travelData);
-        int greedy_stars = greedy.findWay(0, 120);
-        RandomAlg randomAlg = new RandomAlg(travelData);
-        int rand_stars = randomAlg.findWay(0, 120, 5);
-        FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);
-        fihc.improve(randomAlg.getVisitedAttractions(),120);
+
+        //SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99);
+        //int sa_stars = sa.findWay(0, 120, 5);
+        //RandomAlg randomAlg = new RandomAlg(travelData);
+        //int rand_stars = randomAlg.findWay(0, 120, 5);
+        //FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);
+        //fihc.improve(randomAlg.getVisitedAttractions(),120);
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

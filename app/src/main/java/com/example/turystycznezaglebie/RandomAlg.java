@@ -10,7 +10,7 @@ public class RandomAlg extends Algorithm{
         super(td);
     }
 
-    public int getCollectedStars() {
+    public float getCollectedStars() {
         return collectedStars;
     }
 
@@ -50,7 +50,7 @@ public class RandomAlg extends Algorithm{
     }
 
     @Override
-    public int findWay(int startPoint0, int timeMax, long calculation_time){
+    public float findWay(int startPoint0, int timeMax, long calculation_time){
         long start = System.nanoTime();
         long timeElapsed;
         calculation_time *= 1000000000;
@@ -65,7 +65,8 @@ public class RandomAlg extends Algorithm{
             timeElapsed = finish - start;
         }while(timeElapsed < calculation_time);
 
-        return collectedStars;
+        //return collectedStars;
+        return 0;
     }
 
     @Override

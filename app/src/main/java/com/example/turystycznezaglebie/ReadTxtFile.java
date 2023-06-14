@@ -5,13 +5,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import android.util.Log;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 
 public class ReadTxtFile {
-    public Integer[][] readMatrix(Context context, String args) {
+    public Integer[][] readMatrix(Context context, String args, int size) {
         // JSON file path
         String filePath = args;
-        Integer[][] matrix = new Integer[33][33];
+        Integer[][] matrix = new Integer[size][size];
         try {
             FileInputStream inputStream = context.openFileInput(filePath);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
@@ -56,4 +60,28 @@ public class ReadTxtFile {
         }*/
         return matrix;
     }
+
+    public void saveToFile(Object valToSave, Context context, String FILENAME) {
+        try {
+            // Otwórz strumień do zapisu pliku
+            FileOutputStream fileOutputStream = context.openFileOutput(FILENAME, Context.MODE_APPEND);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+            PrintWriter printWriter = new PrintWriter(outputStreamWriter);
+
+            // Zapisz wartości w formacie tekstowym
+            String dataToWrite = valToSave + "";
+
+            // Zapisz wartości do pliku
+            printWriter.println(dataToWrite);
+            printWriter.flush();
+
+            // Zamknij strumienie
+            printWriter.close();
+            outputStreamWriter.close();
+            fileOutputStream.close();
+        } catch (IOException e) {
+            Log.e("FileWrite", "Błąd podczas zapisu do pliku: " + e.getMessage());
+        }
+    }
+
 }

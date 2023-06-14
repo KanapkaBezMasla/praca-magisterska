@@ -13,14 +13,14 @@ public class Greedy extends Algorithm{
     }
 
     @Override
-    public int findWay(int startPoint0, int timeMax, long calculation_time){
+    public float findWay(int startPoint0, int timeMax, long calculation_time){
         return findWay(startPoint0, timeMax);
     }
 
 
-    public int findWay(int startPoint, int timeMax){
+    public float findWay(int startPoint, int timeMax){
         timeMax *= 60;
-        int collectedStars = travelData.stars[startPoint];
+        collectedStars = travelData.stars[startPoint].floatValue();
         ArrayList<Integer> attractionsToVisit = new ArrayList<Integer>();
         for (int i = 0; i < travelData.walking_matrix.length; i++)
             attractionsToVisit.add(i);
@@ -33,7 +33,7 @@ public class Greedy extends Algorithm{
             float best_fitness = 0;
             Integer nextCity = -1;
             for (int city : attractionsToVisit) {
-                float fitness = travelData.fitness(startPoint, city, timeMax);
+                float fitness = travelData.fitness_per_s(startPoint, city, timeMax);
                 if(fitness == -1)
                     continue;
                 if (best_fitness < fitness) {
@@ -45,10 +45,10 @@ public class Greedy extends Algorithm{
                 break;
             attractionsToVisit.remove(nextCity);
             visitedAttractions.add(nextCity);
+            collectedStars += travelData.fitness(startPoint, nextCity, timeMax);
             timeMax -= travelData.visit_time[nextCity]*60;
             timeMax -= travelData.walking_matrix[startPoint][nextCity];
             startPoint = nextCity;
-            collectedStars += travelData.stars[nextCity];
         }
 
         return collectedStars;

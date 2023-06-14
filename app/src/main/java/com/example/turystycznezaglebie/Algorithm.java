@@ -8,13 +8,13 @@ public abstract class  Algorithm {
     public Algorithm(TravelData td){
         travelData = td;
     }
-    protected int collectedStars;
+    protected float collectedStars;
 
     public ArrayList getVisitedAttractions() {
         return visitedAttractions;
     }
 
-    public abstract int findWay(int startPoint0, int timeMax, long calculation_time);
+    public abstract float findWay(int startPoint0, int timeMax, long calculation_time);
 
     public abstract int findWayMultimodal(int startPoint0, int timeMax, long calculation_time);
 

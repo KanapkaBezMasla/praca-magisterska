@@ -19,16 +19,28 @@ public class TravelData {
         car_matrix = cm;
     }
 
+    public float fitness_per_s(int start, int destination, int time_left){
+        if (walking_matrix[start][destination] > time_left*60)
+            return -1;
+        float time4attraction = visit_time[destination].floatValue()*60 + walking_matrix[start][destination].floatValue();
+        if (time4attraction < time_left){
+            float penalty = (time4attraction - time_left)*stars[destination].floatValue()/time4attraction;
+            return (stars[destination].floatValue() - penalty) / time4attraction;
+        }
+        else
+            return stars[destination].floatValue() / time4attraction;
+    }
+
     public float fitness(int start, int destination, int time_left){
         if (walking_matrix[start][destination] > time_left*60)
             return -1;
         float time4attraction = visit_time[destination].floatValue()*60 + walking_matrix[start][destination].floatValue();
         if (time4attraction > time_left){
             float penalty = (time4attraction - time_left)*stars[destination].floatValue()/time4attraction;
-            return (stars[destination].floatValue() - penalty) / time4attraction;
+            return stars[destination].floatValue() - penalty;
         }
         else
-            return stars[destination].floatValue() / time4attraction;
+            return stars[destination].floatValue();
     }
 
 }

@@ -16,7 +16,7 @@ public class SimulatedAnnealing extends Algorithm{
     }
 
     @Override
-    public int findWay(int startPoint0, int timeMax, long calculation_time){
+    public float findWay(int startPoint0, int timeMax, long calculation_time){
         long start = System.nanoTime();
         long timeElapsed;
         calculation_time *= 1000000000;
@@ -59,8 +59,8 @@ public class SimulatedAnnealing extends Algorithm{
             long finish = System.nanoTime();
             timeElapsed = finish - start;
         }while(timeElapsed < calculation_time && temp>0.001);
-
-        return collectedStars;
+        return 0;
+        //return collectedStars;
     }
 
     private ArrayList<Integer> mutate(ArrayList<Integer> atrListToChange){
