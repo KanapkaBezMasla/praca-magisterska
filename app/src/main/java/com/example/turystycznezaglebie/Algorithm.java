@@ -16,7 +16,7 @@ public abstract class  Algorithm {
 
     public abstract float findWay(int startPoint0, int timeMax, long calculation_time);
 
-    public abstract int findWayMultimodal(int startPoint0, int timeMax, long calculation_time);
+    public abstract float findWayMultimodal(int startPoint0, int timeMax, long calculation_time);
 
 
 }

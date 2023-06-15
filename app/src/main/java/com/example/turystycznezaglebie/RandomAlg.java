@@ -73,7 +73,7 @@ public class RandomAlg extends Algorithm{
     }
 
     @Override
-    public int findWayMultimodal(int startPoint0, int timeMax, long calculation_time) {
+    public float findWayMultimodal(int startPoint0, int timeMax, long calculation_time) {
         return 0;
     }
 }
