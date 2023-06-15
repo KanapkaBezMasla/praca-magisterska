@@ -21,7 +21,7 @@ public class SimulatedAnnealing extends Algorithm{
         long timeElapsed;
         calculation_time *= 1000000000;
         RandomAlg ra = new RandomAlg(travelData);
-        int currCollectedStars = ra.singleRand(startPoint0, timeMax);
+        float currCollectedStars = ra.singleRand(startPoint0, timeMax);
         collectedStars = currCollectedStars;
         visitedAttractions = ra.getVisitedAttractions();
         currentVisitedAttr = (ArrayList<Integer>) ra.getVisitedAttractions().clone();

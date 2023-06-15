@@ -16,8 +16,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-    private Integer [] visit_time =  {15, 1, 3, 2, 4, 60, 25, 15, 60, 5, 50, 4, 20, 5, 20, 10, 25, 4, 4, 15, 45, 3, 2, 20, 5, 20, 3, 20, 120, 20, 10, 4, 90, 30, 10, 40, 7, 1, 2, 13, 8, 2, 2, 25, 3, 30, 30, 12, 45, 15, 4, 20};
-    private Integer [] stars_rating = {5, 2, 3, 2, 3,  4,  3,  2,  5, 2,  3, 1,  3, 2,  4,  1,  3, 1, 3,  2,  2, 1, 1,  2, 2,  5, 1,  1,   3,  1,  2, 1, 4,  5,  3,  3,  2, 2, 1, 5,  4, 2, 3, 5,  2, 5,  4,  2,  5,  3,  2, 5};
+    private final Integer [] visit_time =  {15, 1, 3, 2, 4, 60, 25, 15, 60, 5, 50, 4, 20, 5, 20, 10, 25, 4, 4, 15, 45, 3, 2, 20, 5, 20, 3, 20, 120, 20, 10, 4, 90, 30, 10, 40, 7, 1, 2, 13, 8, 2, 2, 25, 3, 30, 30, 12, 45, 15, 4, 20};
+    private final Integer [] stars_rating = {5, 2, 3, 2, 3,  4,  3,  2,  5, 2,  3, 1,  3, 2,  4,  1,  3, 1, 3,  2,  2, 1, 1,  2, 2,  5, 1,  1,   3,  1,  2, 1, 4,  5,  3,  3,  2, 2, 1, 5,  4, 2, 3, 5,  2, 5,  4,  2,  5,  3,  2, 5};
     //private Integer [] visit_time =   {13, 8, 2, 2, 25, 3, 30, 30, 12, 45, 15, 4, 20};
     //private Integer [] stars_rating = {5,  4, 2, 3, 5,  2, 5,  4,  2,  5,  3,  2, 5};
 
@@ -31,8 +31,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating);
         Experiment ex = new Experiment(visit_time, stars_rating, getApplicationContext());
         //ex.greedy_single();
-        ex.greedy_fihc_single();
-
+        //ex.greedy_fihc_single();
+        ex.random_single();
         //Greedy gr = new Greedy(travelData);
         //gr.findWay(7, 480);
         //SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99);
