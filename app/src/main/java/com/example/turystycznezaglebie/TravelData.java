@@ -1,5 +1,9 @@
 package com.example.turystycznezaglebie;
 
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+
 public class TravelData {
     public Integer [][] walking_matrix;     //czas podróży w sekundach
     public Integer [] visit_time;           //czas zwiedzania w minutach
@@ -20,10 +24,10 @@ public class TravelData {
     }
 
     public float fitness_per_s(int start, int destination, int time_left){
-        if (walking_matrix[start][destination] > time_left*60)
-            return -1;
+        if (walking_matrix[start][destination] > time_left)
+            return 0;
         float time4attraction = visit_time[destination].floatValue()*60 + walking_matrix[start][destination].floatValue();
-        if (time4attraction < time_left){
+        if (time4attraction > time_left){
             float penalty = (time4attraction - time_left)*stars[destination].floatValue()/time4attraction;
             return (stars[destination].floatValue() - penalty) / time4attraction;
         }
@@ -32,8 +36,8 @@ public class TravelData {
     }
 
     public float fitness(int start, int destination, int time_left){
-        if (walking_matrix[start][destination] > time_left*60)
-            return -1;
+        if (walking_matrix[start][destination] > time_left)
+            return 0;
         float time4attraction = visit_time[destination].floatValue()*60 + walking_matrix[start][destination].floatValue();
         if (time4attraction > time_left){
             float penalty = (time4attraction - time_left)*stars[destination].floatValue()/time4attraction;
@@ -42,5 +46,19 @@ public class TravelData {
         else
             return stars[destination].floatValue();
     }
+
+    public float fitness4listOfAttraction(@NonNull ArrayList<Integer> visitedAttractions, int timeMax){
+        int start = visitedAttractions.get(0);
+        float collectedStars = stars[start].floatValue();
+        for(int dest : visitedAttractions){
+            if(dest==start)
+                continue;
+            collectedStars+=fitness(start,dest, timeMax);
+            start = dest;
+            timeMax -= visit_time[dest].floatValue()*60 + walking_matrix[start][dest].floatValue();
+        }
+        return collectedStars;
+    }
+
 
 }

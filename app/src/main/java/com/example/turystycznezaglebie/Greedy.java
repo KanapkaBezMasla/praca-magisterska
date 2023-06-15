@@ -34,7 +34,7 @@ public class Greedy extends Algorithm{
             Integer nextCity = -1;
             for (int city : attractionsToVisit) {
                 float fitness = travelData.fitness_per_s(startPoint, city, timeMax);
-                if(fitness == -1)
+                if(fitness == 0)
                     continue;
                 if (best_fitness < fitness) {
                     best_fitness = fitness;
