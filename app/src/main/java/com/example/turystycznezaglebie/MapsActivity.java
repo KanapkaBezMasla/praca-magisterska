@@ -27,16 +27,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         ReadTxtFile fileReader = new ReadTxtFile();
         Integer [][] walk_matrix;
+        Integer [][] car_matrix;
         walk_matrix = fileReader.readMatrix(getApplicationContext(), "data13D.txt", 13);
-        TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating);
+        car_matrix = fileReader.readMatrix(getApplicationContext(), "data13D_car.txt", 13);
+        TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating, car_matrix);
         Experiment ex = new Experiment(visit_time, stars_rating, getApplicationContext());
         //ex.greedy_single();
         //ex.greedy_fihc_single();
         //ex.random_single();
-        //Greedy gr = new Greedy(travelData);
+        Greedy gr = new Greedy(travelData);
+        CarSollution cs =  gr.findWayMultimodal(7, 240);
         //gr.findWay(7, 480);
-        SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99);
-        float sa_stars = sa.findWay(0, 120, 10);
+        //SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99);
+        //float sa_stars = sa.findWay(0, 120, 10);
         //RandomAlg randomAlg = new RandomAlg(travelData);
         //float rand_stars = randomAlg.findWay(0, 120, 5);
         //FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);

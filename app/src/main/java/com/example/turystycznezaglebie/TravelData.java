@@ -73,4 +73,29 @@ public class TravelData {
         return currentPathTime;
     }
 
+    public float fitness_car(int start, int destination, int time_leftS){
+        if (car_matrix[start][destination] > time_leftS)
+            return 0;
+        float time4attraction = visit_time[destination].floatValue()*60 + car_matrix[start][destination].floatValue() + + Algorithm.CAR_PARKING_TIME;
+        if (time4attraction > time_leftS){
+            float penalty = (time4attraction - time_leftS)*stars[destination].floatValue()/time4attraction;
+            return stars[destination].floatValue() - penalty;
+        }
+        else
+            return stars[destination].floatValue();
+    }
+
+    public float fitness_per_s_car(int start, int destination, int time_left, int car){
+        if (walking_matrix[start][car] + car_matrix[car][destination] + Algorithm.CAR_PARKING_TIME > time_left)
+            return 0;
+        float time4attraction = visit_time[destination].floatValue()*60 + walking_matrix[start][car].floatValue()
+                + car_matrix[car][destination].floatValue() + Algorithm.CAR_PARKING_TIME;
+        if (time4attraction > time_left){
+            float penalty = (time4attraction - time_left)*stars[destination].floatValue()/time4attraction;
+            return (stars[destination].floatValue() - penalty) / time4attraction;
+        }
+        else
+            return stars[destination].floatValue() / time4attraction;
+    }
+
 }

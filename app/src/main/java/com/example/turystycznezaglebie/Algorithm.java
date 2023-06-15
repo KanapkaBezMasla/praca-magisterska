@@ -10,6 +10,8 @@ public abstract class  Algorithm {
     }
     protected float collectedStars;
     public static final float CAR_PARKING_TIME = 5.0f;
+    protected int car;  //miejsce parkowania auta
+    protected ArrayList<Boolean> travelByCar = new ArrayList<Boolean>();
 
     public ArrayList getVisitedAttractions() {
         return visitedAttractions;
@@ -17,7 +19,7 @@ public abstract class  Algorithm {
 
     public abstract float findWay(int startPoint0, int timeMax, long calculation_time);
 
-    public abstract float findWayMultimodal(int startPoint0, int timeMax, long calculation_time);
+    public abstract CarSollution findWayMultimodal(int startPoint0, int timeMax, long calculation_time);
 
 
 }
