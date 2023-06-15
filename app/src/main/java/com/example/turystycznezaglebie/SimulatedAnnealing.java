@@ -1,5 +1,7 @@
 package com.example.turystycznezaglebie;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -16,8 +18,11 @@ public class SimulatedAnnealing extends Algorithm{
         boltzman = bolt;
     }
 
-    @Override
-    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){
+    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){return 0;}
+
+    //@Override
+    public float findWay(int startPoint0, int timeMaxMin, long calculation_time, Context context){
+        ReadTxtFile fileReader = new ReadTxtFile();
         int timeMaxS = timeMaxMin*60;
         long start = System.nanoTime();
         long timeElapsed;
@@ -28,7 +33,14 @@ public class SimulatedAnnealing extends Algorithm{
         visitedAttractions = ra.getVisitedAttractions();
         currentVisitedAttr = (ArrayList<Integer>) ra.getVisitedAttractions().clone();
         double temp = collectedStars*1000.0;
-
+        {
+            long finish = System.nanoTime();
+            timeElapsed = finish - start;
+            fileReader.saveToFile(collectedStars, context, "sa_stars_tune_single.txt");
+            fileReader.saveToFile(timeElapsed/1000000000, context, "sa_time_tune_single.txt");
+            fileReader.saveToFile(collectedStars, context, "sa_best_tune_single.txt");
+            fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
+        }
         do {
             ArrayList<Integer> newPath = (ArrayList<Integer>)currentVisitedAttr.clone();
             mutate(newPath, timeMaxS);
@@ -41,7 +53,7 @@ public class SimulatedAnnealing extends Algorithm{
                 currCollectedStars = newCollectedStars;
                 currentVisitedAttr = newPath;
             }else{
-                double acc_probability = Math.exp((currCollectedStars - newCollectedStars)/temp);
+                double acc_probability = Math.exp((newCollectedStars - currCollectedStars)/temp);
                 double r = random.nextDouble();
                 if(r<acc_probability) {
                     currentVisitedAttr = newPath;
@@ -51,6 +63,10 @@ public class SimulatedAnnealing extends Algorithm{
             temp *= boltzman;
             long finish = System.nanoTime();
             timeElapsed = finish - start;
+            fileReader.saveToFile(currCollectedStars, context, "sa_stars_tune_single.txt");
+            fileReader.saveToFile(timeElapsed/1000000000.0, context, "sa_time_tune_single.txt");
+            fileReader.saveToFile(collectedStars, context, "sa_best_tune_single.txt");
+            fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
         }while(timeElapsed < calculation_time && temp>0.001);
         return 0;
         //return collectedStars;

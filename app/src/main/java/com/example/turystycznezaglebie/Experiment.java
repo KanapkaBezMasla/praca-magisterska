@@ -13,7 +13,7 @@ public class Experiment {
     private final String [][] datasets = {small_datasets, avg_datasets, big_datasets};
     private final int [] dataset_sizes = {13, 26, 52};
     private final int [] travel_time = {60, 120, 240, 480};
-    private final long [] measure_time = {1, 3, 5, 10, 15};
+    private final long [] measure_time = {1, 3, 5, 10};
 
     private Integer [] visit_time2;
     private Integer [] stars_rating2;
