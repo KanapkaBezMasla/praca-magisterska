@@ -50,12 +50,15 @@ public class TravelData {
     public float fitness4listOfAttraction(@NonNull ArrayList<Integer> visitedAttractions, int timeMax){
         int start = visitedAttractions.get(0);
         float collectedStars = stars[start].floatValue();
+        timeMax -= visit_time[start].floatValue()*60;
         for(int dest : visitedAttractions){
             if(dest==start)
                 continue;
             collectedStars+=fitness(start,dest, timeMax);
-            start = dest;
             timeMax -= visit_time[dest].floatValue()*60 + walking_matrix[start][dest].floatValue();
+            start = dest;
+            if (timeMax<=0)
+                return collectedStars;
         }
         return collectedStars;
     }

@@ -107,6 +107,11 @@ public class FirstImprovementHillClimber {
                                     prevTime += travelData.walking_matrix[bi][bj];
                                     newTime += travelData.walking_matrix[bj][bi];
                                 }
+                                ArrayList<Integer> newVisitedAttractions = (ArrayList<Integer>) visitedAttractions.clone();
+                                newVisitedAttractions.set(i2, bj);
+                                newVisitedAttractions.set(j2, bi);
+                                float oldFitness = travelData.fitness4listOfAttraction(visitedAttractions, timeMax);
+                                float newFitness = travelData.fitness4listOfAttraction(newVisitedAttractions, timeMax);
                                 if (newTime < prevTime) {
                                     visitedAttractions.set(i2, bj);
                                     visitedAttractions.set(j2, bi);
@@ -157,12 +162,20 @@ public class FirstImprovementHillClimber {
                         }
                         //Atrakcji nie ma na liście i wymieniamy ją.
                         else {
-                            int ai = visitedAttractions.get(i - 1);
                             int bi = currentAttraction;
-                            int prevTime = travelData.walking_matrix[ai][bi] + travelData.visit_time[bi] * 60;
-                            int newTime = travelData.walking_matrix[ai][j] + travelData.visit_time[j] * 60;
                             if (i != visitedAttractions.size() - 1) {
-                                int ci = visitedAttractions.get(i + 1);
+                                ArrayList<Integer> newVisitedAttractions = (ArrayList<Integer>) visitedAttractions.clone();
+                                newVisitedAttractions.set(i, j);
+                                float oldFitness = travelData.fitness4listOfAttraction(visitedAttractions, timeMax);
+                                float newFitness = travelData.fitness4listOfAttraction(newVisitedAttractions, timeMax);
+                                if (newFitness > oldFitness) {
+                                    visitedAttractions.set(i, j);
+                                    isVisitedAttractionTable[j] = true;
+                                    isVisitedAttractionTable[bi] = false;
+                                    currentPathTime = countCurrentPathTime(visitedAttractions);
+                                    restart = true;
+                                }
+                                /*int ci = visitedAttractions.get(i + 1);
                                 prevTime += travelData.walking_matrix[bi][ci];
                                 newTime += travelData.walking_matrix[j][ci];
 
@@ -187,7 +200,7 @@ public class FirstImprovementHillClimber {
                                         float oldFitness = travelData.fitness(ai, bi, Integer.MAX_VALUE) + travelData.fitness(bi, ci, Integer.MAX_VALUE)
                                                 + travelData.fitness(penultimateAttraction, lastAttraction, prevTimeLeft4LastAttraction);
                                         float newFitness = travelData.fitness(ai, j, Integer.MAX_VALUE) + travelData.fitness(j, ci, Integer.MAX_VALUE)
-                                                + travelData.fitness(penultimateAttraction, lastAttraction, prevTimeLeft4LastAttraction - prevTime + newTime);*/
+                                                + travelData.fitness(penultimateAttraction, lastAttraction, prevTimeLeft4LastAttraction - prevTime + newTime);/
                                         if (newFitness > oldFitness) {
                                             visitedAttractions.set(i, j);
                                             isVisitedAttractionTable[j] = true;
@@ -196,11 +209,14 @@ public class FirstImprovementHillClimber {
                                             restart = true;
                                         }
                                     }
-                                }
+                                }*/
                             }
                             else{   //wymieniamy ostatnią atrakcję na liście
-                                float oldFitness = travelData.fitness(ai, bi, currentPathTime-prevTime);
-                                float newFitness = travelData.fitness(ai, j, currentPathTime-prevTime);
+                                int ai = visitedAttractions.get(i - 1);
+                                int prevTime = travelData.walking_matrix[ai][bi] + travelData.visit_time[bi] * 60;
+                                int newTime = travelData.walking_matrix[ai][j] + travelData.visit_time[j] * 60;
+                                float oldFitness = travelData.fitness(ai, bi, timeMax - currentPathTime + prevTime);
+                                float newFitness = travelData.fitness(ai, j,  timeMax - currentPathTime + prevTime);
                                 if (newFitness>oldFitness) {
                                     visitedAttractions.set(i, j);
                                     isVisitedAttractionTable[j] = true;

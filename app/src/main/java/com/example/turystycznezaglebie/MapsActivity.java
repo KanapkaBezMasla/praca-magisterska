@@ -30,8 +30,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         walk_matrix = fileReader.readMatrix(getApplicationContext(), "data13D.txt", 13);
         TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating);
         Experiment ex = new Experiment(visit_time, stars_rating, getApplicationContext());
-        ex.greedy_single();
-        //ex.greedy_fihc_single();
+        //ex.greedy_single();
+        ex.greedy_fihc_single();
 
         //Greedy gr = new Greedy(travelData);
         //gr.findWay(7, 480);
