@@ -1,7 +1,7 @@
 package com.example.turystycznezaglebie;
 
 import androidx.annotation.NonNull;
-
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -17,12 +17,13 @@ public class SimulatedAnnealing extends Algorithm{
     }
 
     @Override
-    public float findWay(int startPoint0, int timeMax, long calculation_time){
+    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){
+        int timeMaxS = timeMaxMin*60;
         long start = System.nanoTime();
         long timeElapsed;
         calculation_time *= 1000000000;
         RandomAlg ra = new RandomAlg(travelData);
-        float currCollectedStars = ra.singleRand(startPoint0, timeMax);
+        float currCollectedStars = ra.singleRand(startPoint0, timeMaxMin);
         collectedStars = currCollectedStars;
         visitedAttractions = ra.getVisitedAttractions();
         currentVisitedAttr = (ArrayList<Integer>) ra.getVisitedAttractions().clone();
@@ -30,8 +31,8 @@ public class SimulatedAnnealing extends Algorithm{
 
         do {
             ArrayList<Integer> newPath = (ArrayList<Integer>)currentVisitedAttr.clone();
-            mutate(newPath);
-            float newCollectedStars = travelData.fitness4listOfAttraction(newPath, timeMax);
+            mutate(newPath, timeMaxS);
+            float newCollectedStars = travelData.fitness4listOfAttraction(newPath, timeMaxS);
             if (newCollectedStars > currCollectedStars) {
                 if(newCollectedStars>collectedStars){
                     collectedStars = newCollectedStars;
@@ -56,7 +57,13 @@ public class SimulatedAnnealing extends Algorithm{
     }
 
     @NonNull
-    private ArrayList<Integer> mutate(ArrayList<Integer> atrListToChange){
+    private ArrayList<Integer> mutate(ArrayList<Integer> atrListToChange, int timeMaxS){
+        boolean [] isVisitedAttractionTable = new boolean[travelData.walking_matrix.length];
+        for (int j=0; j<travelData.walking_matrix.length; j++)
+            isVisitedAttractionTable[j] = false;
+        for (Iterator<Integer> iter = atrListToChange.iterator(); iter.hasNext(); )
+            isVisitedAttractionTable[iter.next()] = true;
+
         boolean swap = random.nextBoolean();
         if(swap && atrListToChange.size()>2){
             int a = 0;
@@ -79,16 +86,47 @@ public class SimulatedAnnealing extends Algorithm{
                 int b = random.nextInt(travelData.visit_time.length - 2) + 1;
                 boolean visited = true;
                 while(visited) {
-                    visited = atrListToChange.contains(b);
+                    visited = isVisitedAttractionTable[b];;
                     if(visited){
                         if(++b==travelData.visit_time.length)
                             b=1;
                     }
                 }
+                isVisitedAttractionTable[atrListToChange.get(a)] = false;
+                isVisitedAttractionTable[b] = true;
                 atrListToChange.set(a, b);
             }catch (Exception e){
                 //Toast.makeText(getApplicationContext(), "isVisitedAttractionTable.lenght musi wynosić minimum 3", Toast.LENGTH_SHORT).show();
                 return null;
+            }
+        }
+
+        //próbujemy dołożyć nowe atrakcje na koniec listy
+        int currentPathTime = travelData.countCurrentPathTime(atrListToChange);;
+        if(currentPathTime<timeMaxS){
+            boolean noNew = false;
+            while(!noNew){
+                Integer startPoint = visitedAttractions.get(visitedAttractions.size()-1);
+                float best_fitness = 0;
+                Integer nextCity = -1;
+                for (int i=0; i<isVisitedAttractionTable.length; i++) {
+                    if(isVisitedAttractionTable[i])
+                        continue;
+                    float fitness = travelData.fitness(startPoint, i, timeMaxS-currentPathTime);
+                    if(fitness == 0)
+                        continue;
+                    if (best_fitness < fitness) {
+                        best_fitness = fitness;
+                        nextCity = i;
+                    }
+                }
+                if(nextCity == -1) {
+                    noNew=true;
+                    break;
+                }
+                isVisitedAttractionTable[nextCity] = true;
+                visitedAttractions.add(nextCity);
+                currentPathTime += travelData.visit_time[nextCity]*60 + travelData.walking_matrix[startPoint][nextCity];
             }
         }
 

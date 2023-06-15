@@ -49,20 +49,10 @@ public class FirstImprovementHillClimber {
         return visitedAttractions;
     }*/
 
-    private int countCurrentPathTime(@NonNull ArrayList<Integer> visitedAttractions){
-        int currentPathTime = 0;
-        int prevAttraction = visitedAttractions.get(0);
-        for (Integer atr : visitedAttractions){
-            currentPathTime += travelData.visit_time[atr]*60 + travelData.walking_matrix[prevAttraction][atr];
-            prevAttraction = atr;
-        }
-        return currentPathTime;
-    }
-
     public ArrayList<Integer> improve(@NonNull ArrayList<Integer> visitedAttractions, int timeMax){
         timeMax *= 60;
         int firstAttraction = visitedAttractions.get(0);
-        int currentPathTime = countCurrentPathTime(visitedAttractions);
+        int currentPathTime =  travelData.countCurrentPathTime(visitedAttractions);
 
         //Tablica zawierająca info, czy atrakcje są na liście. Stworzona, by działać szybciej niż contains().
         boolean [] isVisitedAttractionTable = new boolean[travelData.walking_matrix.length];
@@ -127,7 +117,7 @@ public class FirstImprovementHillClimber {
                                 if(newFitness > oldFitness) {
                                     visitedAttractions.set(i2, bj);
                                     visitedAttractions.set(j2, bi);
-                                    currentPathTime = countCurrentPathTime(visitedAttractions);
+                                    currentPathTime = travelData.countCurrentPathTime(visitedAttractions);
                                     restart = true;
                                 }
                             }
@@ -144,7 +134,7 @@ public class FirstImprovementHillClimber {
                                     visitedAttractions.set(i, j);
                                     isVisitedAttractionTable[j] = true;
                                     isVisitedAttractionTable[bi] = false;
-                                    currentPathTime = countCurrentPathTime(visitedAttractions);
+                                    currentPathTime = travelData.countCurrentPathTime(visitedAttractions);
                                     restart = true;
                                 }
 

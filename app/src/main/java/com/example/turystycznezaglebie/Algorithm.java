@@ -9,6 +9,7 @@ public abstract class  Algorithm {
         travelData = td;
     }
     protected float collectedStars;
+    public static final float CAR_PARKING_TIME = 5.0f;
 
     public ArrayList getVisitedAttractions() {
         return visitedAttractions;

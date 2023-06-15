@@ -35,33 +35,42 @@ public class TravelData {
             return stars[destination].floatValue() / time4attraction;
     }
 
-    public float fitness(int start, int destination, int time_left){
-        if (walking_matrix[start][destination] > time_left)
+    public float fitness(int start, int destination, int time_leftS){
+        if (walking_matrix[start][destination] > time_leftS)
             return 0;
         float time4attraction = visit_time[destination].floatValue()*60 + walking_matrix[start][destination].floatValue();
-        if (time4attraction > time_left){
-            float penalty = (time4attraction - time_left)*stars[destination].floatValue()/time4attraction;
+        if (time4attraction > time_leftS){
+            float penalty = (time4attraction - time_leftS)*stars[destination].floatValue()/time4attraction;
             return stars[destination].floatValue() - penalty;
         }
         else
             return stars[destination].floatValue();
     }
 
-    public float fitness4listOfAttraction(@NonNull ArrayList<Integer> visitedAttractions, int timeMax){
+    public float fitness4listOfAttraction(@NonNull ArrayList<Integer> visitedAttractions, int timeMaxS){
         int start = visitedAttractions.get(0);
         float collectedStars = stars[start].floatValue();
-        timeMax -= visit_time[start].floatValue()*60;
+        timeMaxS -= visit_time[start].floatValue()*60;
         for(int dest : visitedAttractions){
             if(dest==start)
                 continue;
-            collectedStars+=fitness(start,dest, timeMax);
-            timeMax -= visit_time[dest].floatValue()*60 + walking_matrix[start][dest].floatValue();
+            collectedStars+=fitness(start,dest, timeMaxS);
+            timeMaxS -= visit_time[dest].floatValue()*60 + walking_matrix[start][dest].floatValue();
             start = dest;
-            if (timeMax<=0)
+            if (timeMaxS<=0)
                 return collectedStars;
         }
         return collectedStars;
     }
 
+    public int countCurrentPathTime(@NonNull ArrayList<Integer> visitedAttractions){
+        int currentPathTime = 0;
+        int prevAttraction = visitedAttractions.get(0);
+        for (Integer atr : visitedAttractions){
+            currentPathTime += visit_time[atr]*60 + walking_matrix[prevAttraction][atr];
+            prevAttraction = atr;
+        }
+        return currentPathTime;
+    }
 
 }
