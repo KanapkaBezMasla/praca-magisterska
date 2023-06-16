@@ -13,7 +13,7 @@ public class Experiment {
     private final String [][] datasets = {small_datasets, avg_datasets, big_datasets};
     private final int [] dataset_sizes = {13, 26, 52};
     private final int [] travel_time = {60, 120, 240, 480};
-    private final long [] measure_time = {1, 3, 5, 10};
+    private final long [] measure_time = {1}; //{1, 3, 5, 10};
 
     private Integer [] visit_time2;
     private Integer [] stars_rating2;
@@ -122,14 +122,17 @@ public class Experiment {
                         walk_matrix = fileReader.readMatrix(context, dataset, dataset_sizes[a]);
                         TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating);
                         for (int i : startPointsTables[a]) {
-                            RandomAlg ran_alg = new RandomAlg(travelData);
-                            float greedy_stars = ran_alg.findWay(i, time, measure_t);
-                            fileReader.saveToFile(greedy_stars, context, "rand_stars_single.txt");
+                            float rand_stars_avg = 0;
+                            for(int j=0; j<10; j++) {
+                                RandomAlg ran_alg = new RandomAlg(travelData);
+                                rand_stars_avg += ran_alg.findWay(i, time, measure_t);
+                            }
+                            fileReader.saveToFile(rand_stars_avg/10, context, "rand_stars_single1.txt");
                         }
                     }
-                    fileReader.saveToFile("\n", context, "rand_stars_single.txt");
+                    fileReader.saveToFile("\n", context, "rand_stars_single1.txt");
                 }
-                fileReader.saveToFile("\n=============\n", context, "rand_stars_single.txt");
+                fileReader.saveToFile("\n=============\n", context, "rand_stars_single1.txt");
             }
         }
     }

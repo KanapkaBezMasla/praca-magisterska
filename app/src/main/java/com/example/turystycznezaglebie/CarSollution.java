@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
-public class CarSollution {
+public class CarSollution implements Cloneable{
     public int car;  //miejsce parkowania auta
     public ArrayList<Boolean> travelByCar = new ArrayList<Boolean>();
     public ArrayList<Integer> visitedAttractions = new ArrayList<Integer>();
@@ -16,5 +16,11 @@ public class CarSollution {
         collectedStars = stars;
     }
 
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+
+        CarSollution cs = new CarSollution(this.travelByCar, this.visitedAttractions, this.collectedStars);
+        return cs;
+    }
 
 }

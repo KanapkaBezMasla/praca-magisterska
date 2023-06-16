@@ -116,6 +116,11 @@ public class Greedy extends Algorithm{
         }
 
         CarSollution cs = new CarSollution(travelByCar, visitedAttractions, collectedStars);
+        try {
+            carSollution = (CarSollution) cs.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
 
         return cs;
     }
