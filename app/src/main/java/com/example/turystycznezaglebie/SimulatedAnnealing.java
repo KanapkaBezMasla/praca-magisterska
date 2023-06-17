@@ -1,46 +1,51 @@
 package com.example.turystycznezaglebie;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
-import java.util.Iterator;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 public class SimulatedAnnealing extends Algorithm{
     private ArrayList<Integer> currentVisitedAttr = new ArrayList<Integer>();
     public double boltzman;
     private Random random = new Random();
+    private double temp_beg;
 
-
-    public SimulatedAnnealing(TravelData td, double bolt){
+    public SimulatedAnnealing(TravelData td, double bolt, double tb){
         super(td);
         boltzman = bolt;
+        temp_beg = tb;
     }
 
-    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){return 0;}
+    //public float findWay(int startPoint0, int timeMaxMin, long calculation_time){return 0;}
 
-    //@Override
-    public float findWay(int startPoint0, int timeMaxMin, long calculation_time, Context context){
-        ReadTxtFile fileReader = new ReadTxtFile();
+    @Override
+    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){//, Context context){
+        //ReadTxtFile fileReader = new ReadTxtFile();
         int timeMaxS = timeMaxMin*60;
         long start = System.nanoTime();
         long timeElapsed;
         calculation_time *= 1000000000;
-        RandomAlg ra = new RandomAlg(travelData);
-        float currCollectedStars = ra.singleRand(startPoint0, timeMaxMin);
+        //RandomAlg ra = new RandomAlg(travelData);
+        Greedy greedy = new Greedy(travelData);
+        float currCollectedStars = greedy.findWay(startPoint0, timeMaxMin);
         collectedStars = currCollectedStars;
-        visitedAttractions = ra.getVisitedAttractions();
-        currentVisitedAttr = (ArrayList<Integer>) ra.getVisitedAttractions().clone();
-        double temp = collectedStars*1000.0;
-        {
+        visitedAttractions = greedy.getVisitedAttractions();
+        currentVisitedAttr = (ArrayList<Integer>) greedy.getVisitedAttractions().clone();
+        double temp = collectedStars*temp_beg;
+        /*{
+            long startBreak = System.nanoTime();
             long finish = System.nanoTime();
-            timeElapsed = finish - start;
+            //timeElapsed = finish - start;
             fileReader.saveToFile(collectedStars, context, "sa_stars_tune_single.txt");
-            fileReader.saveToFile(timeElapsed/1000000000, context, "sa_time_tune_single.txt");
+            //fileReader.saveToFile(timeElapsed/1000000000, context, "sa_time_tune_single.txt");
             fileReader.saveToFile(collectedStars, context, "sa_best_tune_single.txt");
             fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
-        }
+            long stopBreak = System.nanoTime();
+            start += stopBreak - startBreak;
+        }*/
+        int n = 0;
         do {
             ArrayList<Integer> newPath = (ArrayList<Integer>)currentVisitedAttr.clone();
             mutate(newPath, timeMaxS);
@@ -63,13 +68,18 @@ public class SimulatedAnnealing extends Algorithm{
             temp *= boltzman;
             long finish = System.nanoTime();
             timeElapsed = finish - start;
-            fileReader.saveToFile(currCollectedStars, context, "sa_stars_tune_single.txt");
-            fileReader.saveToFile(timeElapsed/1000000000.0, context, "sa_time_tune_single.txt");
-            fileReader.saveToFile(collectedStars, context, "sa_best_tune_single.txt");
-            fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
+            long startBreak = System.nanoTime();
+            /*if(++n==100) {
+                n=0;
+                fileReader.saveToFile(currCollectedStars, context, "sa_stars_tune_single.txt");
+                //fileReader.saveToFile(timeElapsed/1000000000.0, context, "sa_time_tune_single.txt");
+                fileReader.saveToFile(collectedStars, context, "sa_best_tune_single.txt");
+                long stopBreak = System.nanoTime();
+                start += stopBreak - startBreak;
+            }*/
         }while(timeElapsed < calculation_time && temp>0.001);
-        return 0;
-        //return collectedStars;
+        //fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
+        return collectedStars;
     }
 
     @NonNull

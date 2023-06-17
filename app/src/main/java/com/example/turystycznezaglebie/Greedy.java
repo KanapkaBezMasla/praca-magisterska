@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 public class Greedy extends Algorithm{
 
-    public Greedy(TravelData td){
-        super(td);
-    }
+    public Greedy(TravelData td){super(td);}
 
     public ArrayList getVisitedAttractions() {
         return visitedAttractions;

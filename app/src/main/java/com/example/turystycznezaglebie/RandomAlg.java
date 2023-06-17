@@ -7,9 +7,7 @@ public class RandomAlg extends Algorithm{
     private ArrayList<Integer> visitedAttractionsIter = new ArrayList<Integer>();
     private ArrayList<Boolean> travelByCarIter = new ArrayList<Boolean>();
 
-    public RandomAlg(TravelData td) {
-        super(td);
-    }
+    public RandomAlg(TravelData td) {super(td);}
 
     public float getCollectedStars() {
         return collectedStars;
