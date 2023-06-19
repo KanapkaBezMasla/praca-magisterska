@@ -11,6 +11,7 @@ public class SimulatedAnnealing extends Algorithm{
     public double boltzman;
     private Random random = new Random();
     private double temp_beg;
+    private boolean stop;
 
     public SimulatedAnnealing(TravelData td, double bolt, double tb){
         super(td);
@@ -23,16 +24,17 @@ public class SimulatedAnnealing extends Algorithm{
     @Override
     public float findWay(int startPoint0, int timeMaxMin, long calculation_time){//, Context context){
         //ReadTxtFile fileReader = new ReadTxtFile();
+        stop = false;
         int timeMaxS = timeMaxMin*60;
         long start = System.nanoTime();
         long timeElapsed;
         calculation_time *= 1000000000;
-        //RandomAlg ra = new RandomAlg(travelData);
-        Greedy greedy = new Greedy(travelData);
-        float currCollectedStars = greedy.findWay(startPoint0, timeMaxMin);
+        //RandomAlg alg = new RandomAlg(travelData);
+        Greedy alg = new Greedy(travelData);
+        float currCollectedStars = alg.findWay(startPoint0, timeMaxMin);
         collectedStars = currCollectedStars;
-        visitedAttractions = greedy.getVisitedAttractions();
-        currentVisitedAttr = (ArrayList<Integer>) greedy.getVisitedAttractions().clone();
+        visitedAttractions = alg.getVisitedAttractions();
+        currentVisitedAttr = (ArrayList<Integer>) alg.getVisitedAttractions().clone();
         double temp = collectedStars*temp_beg;
         /*{
             long startBreak = System.nanoTime();
@@ -77,7 +79,7 @@ public class SimulatedAnnealing extends Algorithm{
                 long stopBreak = System.nanoTime();
                 start += stopBreak - startBreak;
             }*/
-        }while(timeElapsed < calculation_time && temp>0.001);
+        }while(timeElapsed < calculation_time && temp>0.001 && !stop);
         //fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
         return collectedStars;
     }
@@ -103,7 +105,7 @@ public class SimulatedAnnealing extends Algorithm{
             atrListToChange.set(b, atrListToChange.get(a));
             atrListToChange.set(a, atrListToChange.get(b));
         }
-        else if (atrListToChange.size()>1)
+        else if (atrListToChange.size()>1 && atrListToChange.size() != travelData.visit_time.length)
         {  //wymiana wartości na nową
             int a = 1;
             if (atrListToChange.size()>2)
@@ -111,11 +113,11 @@ public class SimulatedAnnealing extends Algorithm{
             try {
                 int b = random.nextInt(travelData.visit_time.length - 2) + 1;
                 boolean visited = true;
-                while(visited) {
+                while(visited || b==atrListToChange.get(0)) {
                     visited = isVisitedAttractionTable[b];;
                     if(visited){
                         if(++b==travelData.visit_time.length)
-                            b=1;
+                            b=0;
                     }
                 }
                 isVisitedAttractionTable[atrListToChange.get(a)] = false;
@@ -124,6 +126,31 @@ public class SimulatedAnnealing extends Algorithm{
             }catch (Exception e){
                 //Toast.makeText(getApplicationContext(), "isVisitedAttractionTable.lenght musi wynosić minimum 3", Toast.LENGTH_SHORT).show();
                 return null;
+            }
+        }//jeśli wszystkie atrakcje w pełni na liście, to kończymy
+        else if (atrListToChange.size() == travelData.visit_time.length){
+            int timeMaxS2 = timeMaxS;
+            timeMaxS2 -= travelData.visit_time[atrListToChange.get(0)].floatValue()*60;
+            int start = atrListToChange.get(0);
+            for(int dest : visitedAttractions){
+                if(dest==atrListToChange.get(0))
+                    continue;
+                timeMaxS2 -= travelData.visit_time[dest].floatValue()*60 + travelData.walking_matrix[start][dest].floatValue();
+                start = dest;
+                if (timeMaxS2<=0)
+                    break;
+            }
+            stop = true;
+        }
+        //jeżeli czas za krótki, by dojść do jakiegokolwiek atrakcji, to kończymy
+        else if(swap && atrListToChange.size()==1){
+            int start = atrListToChange.get(0);
+            stop = true;
+            for(int dest : visitedAttractions){
+                if(dest==atrListToChange.get(0))
+                    continue;
+                if (timeMaxS>travelData.walking_matrix[start][dest])
+                    stop=false;
             }
         }
 

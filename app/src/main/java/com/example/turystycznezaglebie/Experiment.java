@@ -67,6 +67,46 @@ public class Experiment {
         }
     }
 
+    public void greedy_multi(){
+        for (int a=0; a<3; a++) {
+            for (int time : travel_time) {
+                int b = 0;
+                for (int c=0; c<datasets[a].length; c++) {
+                    String dataset = datasets[a][c];
+                    String dataset_car = datasets_car[a][c];
+                    Integer[] visit_time = new Integer[dataset_sizes[a]];
+                    for (int i = b*dataset_sizes[a], j=0; i < (b+1)*dataset_sizes[a]; i++, j++) {
+                        visit_time[j] = visit_time2[i];
+                    }
+                    Integer[] stars_rating = new Integer[dataset_sizes[a]];
+                    for (int i = b*dataset_sizes[a], j=0; i < (b+1)*dataset_sizes[a]; i++, j++) {
+                        stars_rating[j] = stars_rating2[i];
+                    }
+                    b++;
+
+                    Integer[][] walk_matrix;
+                    Integer[][] car_matrix;
+                    walk_matrix = fileReader.readMatrix(context, dataset, dataset_sizes[a]);
+                    car_matrix = fileReader.readMatrix(context, dataset_car, dataset_sizes[a]);
+                    TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating, car_matrix);
+                    for (int i : startPointsTables[a]) {
+                        long start = System.nanoTime();
+                        Greedy greedy = new Greedy(travelData);
+                        CarSollution cs = greedy.findWayMultimodal(i, time);
+                        long finish = System.nanoTime();
+                        long timeElapsed = finish - start;
+                        fileReader.saveToFile(cs.collectedStars, context, "greedy_stars_multi.txt");
+                        fileReader.saveToFile(timeElapsed, context, "greedy_time_multi.txt");
+                    }
+                }
+                fileReader.saveToFile("\n", context, "greedy_stars_multi.txt");
+                fileReader.saveToFile("\n", context, "greedy_time_multi.txt");
+            }
+            fileReader.saveToFile("\n=============\n", context, "greedy_stars_multi.txt");
+            fileReader.saveToFile("\n=============\n", context, "greedy_time_multi.txt");
+        }
+    }
+
     public void greedy_fihc_single(){
         for (int a=0; a<3; a++) {
             for (int time : travel_time) {
@@ -219,23 +259,23 @@ public class Experiment {
                         for (int i : startPointsTables[a]) {
                             float rand_stars_avg = 0;
                             float rand_stars_best = 0;
-
-                            for(int j=0; j<10; j++) {
+                            int iterations = 5;
+                            for(int j=0; j<iterations; j++) {
                                 SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999855, 1);
                                 float res = sa.findWay(i, time, measure_t);
                                 rand_stars_avg += res;
                                 if(rand_stars_best < res)
                                     rand_stars_best = res;
                             }
-                            fileReader.saveToFile(rand_stars_avg/10, context, "sa_stars_avg_single10.txt");
-                            fileReader.saveToFile(rand_stars_best, context, "sa_stars_best_single10.txt");
+                            fileReader.saveToFile(rand_stars_avg/iterations, context, "sa_stars_avg_single10_1.txt");
+                            fileReader.saveToFile(rand_stars_best, context, "sa_stars_best_single10_1.txt");
                         }
                     }
-                    fileReader.saveToFile("\n", context, "sa_stars_avg_single10.txt");
-                    fileReader.saveToFile("\n", context, "sa_stars_best_single10.txt");
+                    fileReader.saveToFile("\n", context, "sa_stars_avg_single10_1.txt");
+                    fileReader.saveToFile("\n", context, "sa_stars_best_single10_1.txt");
                 }
-                fileReader.saveToFile("\n=============\n", context, "sa_stars_avg_single10.txt");
-                fileReader.saveToFile("\n=============\n", context, "sa_stars_best_single10.txt");
+                fileReader.saveToFile("\n=============\n", context, "sa_stars_avg_single10_1.txt");
+                fileReader.saveToFile("\n=============\n", context, "sa_stars_best_single10_1.txt");
             }
         }
     }

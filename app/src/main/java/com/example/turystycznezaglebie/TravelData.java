@@ -9,6 +9,7 @@ public class TravelData {
     public Integer [] visit_time;           //czas zwiedzania w minutach
     public Integer [] stars;
     public Integer [][] car_matrix;
+    private Integer CAR_PARKING_TIME = 5;
 
     public TravelData(Integer [][]wm, Integer [] vt, Integer [] st){
         walking_matrix = wm;
@@ -86,10 +87,10 @@ public class TravelData {
     }
 
     public float fitness_per_s_car(int start, int destination, int time_left, int car){
-        if (walking_matrix[start][car] + car_matrix[car][destination] + Algorithm.CAR_PARKING_TIME > time_left)
+        if (walking_matrix[start][car] + car_matrix[car][destination] + CAR_PARKING_TIME > time_left)
             return 0;
         float time4attraction = visit_time[destination].floatValue()*60 + walking_matrix[start][car].floatValue()
-                + car_matrix[car][destination].floatValue() + Algorithm.CAR_PARKING_TIME;
+                + car_matrix[car][destination].floatValue() + CAR_PARKING_TIME;
         if (time4attraction > time_left){
             float penalty = (time4attraction - time_left)*stars[destination].floatValue()/time4attraction;
             return (stars[destination].floatValue() - penalty) / time4attraction;
