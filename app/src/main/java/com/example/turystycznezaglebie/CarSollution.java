@@ -17,10 +17,20 @@ public class CarSollution implements Cloneable{
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public CarSollution clone() throws CloneNotSupportedException {
 
         CarSollution cs = new CarSollution(this.travelByCar, this.visitedAttractions, this.collectedStars);
         return cs;
+    }
+
+    public int getCar(){
+        int c = visitedAttractions.get(0);
+        for(int i=travelByCar.size()-1; i>=0; i--)
+            if(travelByCar.get(i)) {
+                c = visitedAttractions.get(i);
+                break;
+            }
+        return c;
     }
 
 }

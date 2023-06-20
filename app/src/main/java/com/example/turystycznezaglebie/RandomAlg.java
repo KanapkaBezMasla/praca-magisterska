@@ -131,8 +131,9 @@ public class RandomAlg extends Algorithm{
                 collectedStarsIter += travelData.fitness(startPoint, nextCity, travelTimeLeft);
                 travelTimeLeft -= travelData.visit_time[nextCity]*60 + travelData.walking_matrix[startPoint][nextCity];
             }else{
-                collectedStarsIter += travelData.fitness_car(startPoint, nextCity, travelTimeLeft);
+                collectedStarsIter += travelData.fitness_car(startPoint, nextCity, travelTimeLeft, car);
                 travelTimeLeft -= timeByCar;
+                car = nextCity;
             }
             startPoint = nextCity;
 

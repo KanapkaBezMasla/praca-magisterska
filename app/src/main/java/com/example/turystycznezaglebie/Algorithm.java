@@ -9,7 +9,7 @@ public abstract class  Algorithm {
         travelData = td;
     }
     protected float collectedStars;
-    public static final int CAR_PARKING_TIME = 5*60;
+    public static final Integer CAR_PARKING_TIME = 5*60;
     protected int car;  //miejsce parkowania auta
     protected ArrayList<Boolean> travelByCar = new ArrayList<Boolean>();
     public CarSollution carSollution;

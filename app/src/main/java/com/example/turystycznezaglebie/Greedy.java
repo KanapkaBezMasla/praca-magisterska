@@ -105,7 +105,7 @@ public class Greedy extends Algorithm{
             }else //jedziemy autem
             {
                 travelByCar.add(true);
-                collectedStars += travelData.fitness_car(startPoint, nextCity_car, timeMax);
+                collectedStars += travelData.fitness_car(startPoint, nextCity_car, timeMax, car);
                 timeMax -= travelData.visit_time[nextCity_car]*60 + travelData.walking_matrix[startPoint][car]+
                         travelData.car_matrix[car][nextCity_car] + CAR_PARKING_TIME;
                 car = nextCity_car;
