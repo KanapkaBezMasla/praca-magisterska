@@ -106,6 +106,8 @@ public class TravelData {
         int car_ite=0;
         int car = prevAttraction;
         for (Integer atr : cs.visitedAttractions){
+            if (atr == prevAttraction)
+                continue;
             currentPathTime += visit_time[atr]*60;
             if(cs.travelByCar.get(car_ite++)) {
                 currentPathTime += walking_matrix[prevAttraction][car] + car_matrix[car][atr] + Algorithm.CAR_PARKING_TIME;
@@ -125,9 +127,9 @@ public class TravelData {
         int car = cs.visitedAttractions.get(0);
         for(int i=0; i<cs.visitedAttractions.size(); i++){
             int dest = cs.visitedAttractions.get(i);
-            boolean byCar = cs.travelByCar.get(i-1);
             if(dest==start)
                 continue;
+            boolean byCar = cs.travelByCar.get(i-1);
             collectedStars+=(byCar) ? fitness_car(start, dest, timeMaxS, car) : fitness(start,dest, timeMaxS);
             timeMaxS -= visit_time[dest].floatValue()*60;
             if(byCar) {

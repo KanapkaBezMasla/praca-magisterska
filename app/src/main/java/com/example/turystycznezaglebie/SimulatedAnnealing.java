@@ -1,5 +1,7 @@
 package com.example.turystycznezaglebie;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -185,9 +187,11 @@ public class SimulatedAnnealing extends Algorithm{
         return atrListToChange;
     }
 
-    @Override
-    public CarSollution findWayMultimodal(int startPoint0, int timeMaxMin, long calculation_time) {
-        //ReadTxtFile fileReader = new ReadTxtFile();
+    public CarSollution findWayMultimodal(int startPoint0, int timeMax, long calculation_time){return null;}
+
+    //@Override
+    public CarSollution findWayMultimodal(int startPoint0, int timeMaxMin, long calculation_time, Context context) {
+        ReadTxtFile fileReader = new ReadTxtFile();
         stop = false;
         int timeMaxS = timeMaxMin*60;
         long start = System.nanoTime();
@@ -202,7 +206,7 @@ public class SimulatedAnnealing extends Algorithm{
             e.printStackTrace();
         }
         double temp = carSollution.collectedStars*temp_beg;
-        /*{
+        {
             long startBreak = System.nanoTime();
             long finish = System.nanoTime();
             //timeElapsed = finish - start;
@@ -212,7 +216,7 @@ public class SimulatedAnnealing extends Algorithm{
             fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
             long stopBreak = System.nanoTime();
             start += stopBreak - startBreak;
-        }*/
+        }
 
         int n = 0;
         do {
@@ -236,19 +240,19 @@ public class SimulatedAnnealing extends Algorithm{
                 long finish = System.nanoTime();
                 timeElapsed = finish - start;
                 long startBreak = System.nanoTime();
-                /*if(++n==100) {
+                if(++n==200) {
                     n=0;
                     fileReader.saveToFile(currCarSollution.collectedStars, context, "sa_stars_tune_multi.txt");
                     //fileReader.saveToFile(timeElapsed/1000000000.0, context, "sa_time_tune_multi.txt");
                     fileReader.saveToFile(collectedStars, context, "sa_best_tune_multi.txt");
                     long stopBreak = System.nanoTime();
                     start += stopBreak - startBreak;
-                }*/
+                }
             } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
             }
         }while(timeElapsed < calculation_time && temp>0.001 && !stop);
-        //fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
+        fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
         return carSollution;
     }
 
