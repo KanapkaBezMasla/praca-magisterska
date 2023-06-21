@@ -3,6 +3,7 @@ package com.example.turystycznezaglebie;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TravelData {
     public Integer [][] walking_matrix;     //czas podróży w sekundach
@@ -51,14 +52,21 @@ public class TravelData {
         int start = visitedAttractions.get(0);
         float collectedStars = stars[start].floatValue();
         timeMaxS -= visit_time[start].floatValue()*60;
+        int beginCutting = -1;
         for(int dest : visitedAttractions){
             if(dest==start)
                 continue;
             collectedStars+=fitness(start,dest, timeMaxS);
             timeMaxS -= visit_time[dest].floatValue()*60 + walking_matrix[start][dest].floatValue();
             start = dest;
-            if (timeMaxS<=0)
-                return collectedStars;
+            if (timeMaxS<=0) {
+                beginCutting = visitedAttractions.indexOf(dest)+1;
+                break;
+            }
+        }
+        if(beginCutting!=-1){
+            List<Integer> subList = visitedAttractions.subList(beginCutting, visitedAttractions.size());
+            subList.clear();
         }
         return collectedStars;
     }
@@ -125,8 +133,13 @@ public class TravelData {
         float collectedStars = stars[start].floatValue();
         timeMaxS -= visit_time[start].floatValue()*60;
         int car = cs.visitedAttractions.get(0);
+        int beginCutting = -1;
         for(int i=0; i<cs.visitedAttractions.size(); i++){
             int dest = cs.visitedAttractions.get(i);
+            if (timeMaxS<=0){
+                beginCutting = cs.visitedAttractions.indexOf(dest);
+                break;
+            }
             if(dest==start)
                 continue;
             boolean byCar = cs.travelByCar.get(i-1);
@@ -138,8 +151,13 @@ public class TravelData {
             }else
                 timeMaxS -= walking_matrix[start][dest].floatValue();
             start = dest;
-            if (timeMaxS<=0)
-                return collectedStars;
+        }
+        if(beginCutting!=-1){
+            int j=beginCutting;
+            while(j<cs.travelByCar.size()){
+                cs.visitedAttractions.remove(j);
+                cs.travelByCar.remove(j-1);
+            }
         }
         return collectedStars;
     }

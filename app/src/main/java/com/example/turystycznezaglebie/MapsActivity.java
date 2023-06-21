@@ -16,12 +16,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-    //private final Integer [] visit_time =  {15, 1, 3, 2, 4, 60, 25, 15, 60, 5, 50, 4, 20, 5, 20, 10, 25, 4, 4, 15, 45, 3, 2, 20, 5, 20, 3, 20, 120, 20, 10, 4, 90, 30, 10, 40, 7, 1, 2, 13, 8, 2, 2, 25, 3, 30, 30, 12, 45, 15, 4, 20};
-    //private final Integer [] stars_rating = {5, 2, 3, 2, 3,  4,  3,  2,  5, 2,  3, 1,  3, 2,  4,  1,  3, 1, 3,  2,  2, 1, 1,  2, 2,  5, 1,  1,   3,  1,  2, 1, 4,  5,  3,  3,  2, 2, 1, 5,  4, 2, 3, 5,  2, 5,  4,  2,  5,  3,  2, 5};
+    private final Integer [] visit_time =  {15, 1, 3, 2, 4, 60, 25, 15, 60, 5, 50, 4, 20, 5, 20, 10, 25, 4, 4, 15, 45, 3, 2, 20, 5, 20, 3, 20, 120, 20, 10, 4, 90, 30, 10, 40, 7, 1, 2, 13, 8, 2, 2, 25, 3, 30, 30, 12, 45, 15, 4, 20};
+    private final Integer [] stars_rating = {5, 2, 3, 2, 3,  4,  3,  2,  5, 2,  3, 1,  3, 2,  4,  1,  3, 1, 3,  2,  2, 1, 1,  2, 2,  5, 1,  1,   3,  1,  2, 1, 4,  5,  3,  3,  2, 2, 1, 5,  4, 2, 3, 5,  2, 5,  4,  2,  5,  3,  2, 5};
     //private Integer [] visit_time =   {13, 8, 2, 2, 25, 3, 30, 30, 12, 45, 15, 4, 20}; //D
     //private Integer [] stars_rating = {5,  4, 2, 3, 5,  2, 5,  4,  2,  5,  3,  2, 5};
-    private Integer [] visit_time =   {15, 1, 3, 2, 4, 60, 25, 15, 60, 5, 50, 4, 20};  //C
-    private Integer [] stars_rating = { 5, 2, 3, 2, 3,  4,  3,  2,  5, 2,  3, 1,  3};
+    //private Integer [] visit_time =   {15, 1, 3, 2, 4, 60, 25, 15, 60, 5, 50, 4, 20};  //C
+    //private Integer [] stars_rating = { 5, 2, 3, 2, 3,  4,  3,  2,  5, 2,  3, 1,  3};
     //private Integer [] visit_time =   {3, 20, 120, 20, 10, 4, 90, 30, 10, 40, 7, 1, 2};  //C
     //private Integer [] stars_rating = {1,  1,   3,  1,  2, 1, 4,  5,  3,  3,  2, 2, 1};
 
@@ -32,20 +32,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ReadTxtFile fileReader = new ReadTxtFile();
         Integer [][] walk_matrix;
         Integer [][] car_matrix;
-        //walk_matrix = fileReader.readMatrix(getApplicationContext(), "data_52.txt", 52);
-        walk_matrix = fileReader.readMatrix(getApplicationContext(), "data13C.txt", 13);
-        car_matrix = fileReader.readMatrix(getApplicationContext(), "data13C_car.txt", 13);
+        walk_matrix = fileReader.readMatrix(getApplicationContext(), "data_52.txt", 52);
+        car_matrix = fileReader.readMatrix(getApplicationContext(), "data_car_52.txt", 52);
+        //walk_matrix = fileReader.readMatrix(getApplicationContext(), "data13C.txt", 13);
+        //car_matrix = fileReader.readMatrix(getApplicationContext(), "data13C_car.txt", 13);
         TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating, car_matrix);
         Experiment ex = new Experiment(visit_time, stars_rating, getApplicationContext());
         //ex.sa_tune(0.99999855, 1.3, 10, "855_13_10.txt");
         //ex.greedy_multi();
-        //ex.sa_single();
+        ex.sa_single();
         //ex.random_multi();
         Greedy gr = new Greedy(travelData);
         //CarSollution cs =  gr.findWayMultimodal(0, 240);
         //gr.findWay(7, 480);
-        SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999855, 1);
-        CarSollution cs = sa.findWayMultimodal(0, 240, 10, getApplicationContext());
+        SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999, 2);
+        //CarSollution cs = sa.findWayMultimodal(0, 240, 10, getApplicationContext());
+        //float res = sa.findWay(0, 240, 40, getApplicationContext());
         RandomAlg randomAlg = new RandomAlg(travelData);
         //CarSollution cs = randomAlg.findWayMultimodal(0, 120, 5);
         //FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);

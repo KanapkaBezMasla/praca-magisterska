@@ -21,11 +21,11 @@ public class SimulatedAnnealing extends Algorithm{
         temp_beg = tb;
     }
 
-    //public float findWay(int startPoint0, int timeMaxMin, long calculation_time){return 0;}
+    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){return 0;}
 
-    @Override
-    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){//, Context context){
-        //ReadTxtFile fileReader = new ReadTxtFile();
+    //@Override
+    public float findWay(int startPoint0, int timeMaxMin, long calculation_time, Context context){
+        ReadTxtFile fileReader = new ReadTxtFile();
         stop = false;
         int timeMaxS = timeMaxMin*60;
         long start = System.nanoTime();
@@ -38,7 +38,7 @@ public class SimulatedAnnealing extends Algorithm{
         visitedAttractions = alg.getVisitedAttractions();
         currentVisitedAttr = (ArrayList<Integer>) alg.getVisitedAttractions().clone();
         double temp = collectedStars*temp_beg;
-        /*{
+        {
             long startBreak = System.nanoTime();
             long finish = System.nanoTime();
             //timeElapsed = finish - start;
@@ -48,7 +48,7 @@ public class SimulatedAnnealing extends Algorithm{
             fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
             long stopBreak = System.nanoTime();
             start += stopBreak - startBreak;
-        }*/
+        }
         int n = 0;
         do {
             ArrayList<Integer> newPath = (ArrayList<Integer>)currentVisitedAttr.clone();
@@ -73,14 +73,14 @@ public class SimulatedAnnealing extends Algorithm{
             long finish = System.nanoTime();
             timeElapsed = finish - start;
             long startBreak = System.nanoTime();
-            /*if(++n==100) {
+            if(++n==100) {
                 n=0;
                 fileReader.saveToFile(currCollectedStars, context, "sa_stars_tune_single.txt");
                 //fileReader.saveToFile(timeElapsed/1000000000.0, context, "sa_time_tune_single.txt");
                 fileReader.saveToFile(collectedStars, context, "sa_best_tune_single.txt");
                 long stopBreak = System.nanoTime();
                 start += stopBreak - startBreak;
-            }*/
+            }
         }while(timeElapsed < calculation_time && temp>0.001 && !stop);
         //fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
         return collectedStars;
@@ -104,6 +104,7 @@ public class SimulatedAnnealing extends Algorithm{
                 if(a==b && a==1)//nextInt ma problem czasem z wylosowaniem 0 i zwiesza program
                     b=2;
             }
+            int buf = atrListToChange.get(b);
             atrListToChange.set(b, atrListToChange.get(a));
             atrListToChange.set(a, atrListToChange.get(b));
         }
@@ -218,7 +219,6 @@ public class SimulatedAnnealing extends Algorithm{
             start += stopBreak - startBreak;
         }
 
-        int n = 0;
         do {
             try {
                 CarSollution newPath = (CarSollution) currCarSollution.clone();
@@ -232,23 +232,21 @@ public class SimulatedAnnealing extends Algorithm{
                 }else{
                     double acc_probability = Math.exp((newPath.collectedStars - currCarSollution.collectedStars)/temp);
                     double r = random.nextDouble();
-                    if(r<acc_probability) {
+                    if(r<acc_probability)
                         currCarSollution = newPath;
-                    }
                 }
                 temp *= boltzman;
                 long finish = System.nanoTime();
                 timeElapsed = finish - start;
                 long startBreak = System.nanoTime();
-                if(++n==200) {
-                    n=0;
-                    fileReader.saveToFile(currCarSollution.collectedStars, context, "sa_stars_tune_multi.txt");
-                    //fileReader.saveToFile(timeElapsed/1000000000.0, context, "sa_time_tune_multi.txt");
-                    fileReader.saveToFile(collectedStars, context, "sa_best_tune_multi.txt");
-                    long stopBreak = System.nanoTime();
-                    start += stopBreak - startBreak;
-                }
-            } catch (CloneNotSupportedException e) {
+
+                fileReader.saveToFile(currCarSollution.collectedStars, context, "sa_stars_tune_multi.txt");
+                //fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
+                fileReader.saveToFile(carSollution.collectedStars, context, "sa_best_tune_multi.txt");
+                long stopBreak = System.nanoTime();
+                start += stopBreak - startBreak;
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }while(timeElapsed < calculation_time && temp>0.001 && !stop);
@@ -264,8 +262,8 @@ public class SimulatedAnnealing extends Algorithm{
         for (Iterator<Integer> iter = carSolToChange.visitedAttractions.iterator(); iter.hasNext(); )
             isVisitedAttractionTable[iter.next()] = true;
 
-        int mut_opt = random.nextInt(3);
-        if (mut_opt==0) mut_opt=1;  //0 losowane jest bardzo rzadko
+        int mut_opt = random.nextInt(4);
+        if (mut_opt==0 || mut_opt==4) mut_opt=2;  //0 losowane jest bardzo rzadko, a opisy w internecie są niejednoznaczne czy wypada 4 czy nie
         if(mut_opt==1 && carSolToChange.visitedAttractions.size()>2){
             int a = 0;
             int b = 0;
@@ -275,8 +273,9 @@ public class SimulatedAnnealing extends Algorithm{
                 if(a==b && a==1)//nextInt ma problem czasem z wylosowaniem 0 i zwiesza program
                     b=2;
             }
+            int buf = carSolToChange.visitedAttractions.get(b);
             carSolToChange.visitedAttractions.set(b, carSolToChange.visitedAttractions.get(a));
-            carSolToChange.visitedAttractions.set(a, carSolToChange.visitedAttractions.get(b));
+            carSolToChange.visitedAttractions.set(a, buf);
         }
         else if(mut_opt==2 && carSolToChange.visitedAttractions.size()>1 && carSolToChange.visitedAttractions.size() != travelData.visit_time.length)
         {  //wymiana wartości na nową

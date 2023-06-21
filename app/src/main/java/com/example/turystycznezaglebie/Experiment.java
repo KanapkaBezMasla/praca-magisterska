@@ -17,7 +17,7 @@ public class Experiment {
     private final String [][] datasets_car = {small_datasets_car, avg_datasets_car, big_datasets_car};
     private final int [] dataset_sizes = {13, 26, 52};
     private final int [] travel_time = {60, 120, 240, 480};
-    private final long [] measure_time = {10}; //{1, 3, 5, 10};
+    private final long [] measure_time = {1}; //{1, 3, 5, 10};
 
     private Integer [] visit_time2;
     private Integer [] stars_rating2;
@@ -239,7 +239,7 @@ public class Experiment {
 
     public void sa_single() {
         for (long measure_t : measure_time) {
-            for (int a = 0; a < 3; a++) {
+            for (int a = 0; a < 1; a++) {
                 for (int time : travel_time) {
                     int b = 0;
                     for (String dataset : datasets[a]) {
@@ -259,23 +259,23 @@ public class Experiment {
                         for (int i : startPointsTables[a]) {
                             float rand_stars_avg = 0;
                             float rand_stars_best = 0;
-                            int iterations = 5;
+                            int iterations = 3;
                             for(int j=0; j<iterations; j++) {
-                                SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999855, 1);
-                                float res = sa.findWay(i, time, measure_t);
+                                SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999855, 10);
+                                float res = 0;//sa.findWay(i, time, measure_t);
                                 rand_stars_avg += res;
-                                if(rand_stars_best < res)
+                                if (rand_stars_best < res)
                                     rand_stars_best = res;
                             }
-                            fileReader.saveToFile(rand_stars_avg/iterations, context, "sa_stars_avg_single10_1.txt");
-                            fileReader.saveToFile(rand_stars_best, context, "sa_stars_best_single10_1.txt");
+                            fileReader.saveToFile(rand_stars_avg/iterations, context, "sa_stars_avg_single10_male.txt");
+                            fileReader.saveToFile(rand_stars_best, context, "sa_stars_best_single10_male.txt");
                         }
                     }
-                    fileReader.saveToFile("\n", context, "sa_stars_avg_single10_1.txt");
-                    fileReader.saveToFile("\n", context, "sa_stars_best_single10_1.txt");
+                    fileReader.saveToFile("\n", context, "sa_stars_avg_single10_male.txt");
+                    fileReader.saveToFile("\n", context, "sa_stars_best_single10_male.txt");
                 }
-                fileReader.saveToFile("\n=============\n", context, "sa_stars_avg_single10_1.txt");
-                fileReader.saveToFile("\n=============\n", context, "sa_stars_best_single10_1.txt");
+                fileReader.saveToFile("\n=============\n", context, "sa_stars_avg_single10_male.txt");
+                fileReader.saveToFile("\n=============\n", context, "sa_stars_best_single10_male.txt");
             }
         }
     }

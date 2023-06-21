@@ -95,8 +95,6 @@ public class Greedy extends Algorithm{
             if(nextCity==-1 || nextCity_car==-1)
                 break;
 
-            attractionsToVisit.remove(nextCity);
-            visitedAttractions.add(nextCity);
             // idziemy pieszo
             if(best_fitness>best_fitness_car) {
                 travelByCar.add(false);
@@ -109,7 +107,10 @@ public class Greedy extends Algorithm{
                 timeMax -= travelData.visit_time[nextCity_car]*60 + travelData.walking_matrix[startPoint][car]+
                         travelData.car_matrix[car][nextCity_car] + CAR_PARKING_TIME;
                 car = nextCity_car;
+                nextCity = nextCity_car;
             }
+            attractionsToVisit.remove(nextCity);
+            visitedAttractions.add(nextCity);
             startPoint = nextCity;
         }
 
