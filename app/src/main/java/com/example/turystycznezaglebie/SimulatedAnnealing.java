@@ -1,6 +1,7 @@
 package com.example.turystycznezaglebie;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -21,10 +22,10 @@ public class SimulatedAnnealing extends Algorithm{
         temp_beg = tb;
     }
 
-    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){return 0;}
+    //public float findWay(int startPoint0, int timeMaxMin, long calculation_time){return 0;}
 
-    //@Override
-    public float findWay(int startPoint0, int timeMaxMin, long calculation_time, Context context){
+    @Override
+    public float findWay(int startPoint0, int timeMaxMin, long calculation_time){//, Context context){
         ReadTxtFile fileReader = new ReadTxtFile();
         stop = false;
         int timeMaxS = timeMaxMin*60;
@@ -38,7 +39,7 @@ public class SimulatedAnnealing extends Algorithm{
         visitedAttractions = alg.getVisitedAttractions();
         currentVisitedAttr = (ArrayList<Integer>) alg.getVisitedAttractions().clone();
         double temp = collectedStars*temp_beg;
-        {
+        /*{
             long startBreak = System.nanoTime();
             long finish = System.nanoTime();
             //timeElapsed = finish - start;
@@ -48,7 +49,7 @@ public class SimulatedAnnealing extends Algorithm{
             fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
             long stopBreak = System.nanoTime();
             start += stopBreak - startBreak;
-        }
+        }*/
         int n = 0;
         do {
             ArrayList<Integer> newPath = (ArrayList<Integer>)currentVisitedAttr.clone();
@@ -72,7 +73,7 @@ public class SimulatedAnnealing extends Algorithm{
             temp *= boltzman;
             long finish = System.nanoTime();
             timeElapsed = finish - start;
-            long startBreak = System.nanoTime();
+            /*long startBreak = System.nanoTime();
             if(++n==100) {
                 n=0;
                 fileReader.saveToFile(currCollectedStars, context, "sa_stars_tune_single.txt");
@@ -80,7 +81,7 @@ public class SimulatedAnnealing extends Algorithm{
                 fileReader.saveToFile(collectedStars, context, "sa_best_tune_single.txt");
                 long stopBreak = System.nanoTime();
                 start += stopBreak - startBreak;
-            }
+            }*/
         }while(timeElapsed < calculation_time && temp>0.001 && !stop);
         //fileReader.saveToFile(temp, context, "sa_temp_tune_single.txt");
         return collectedStars;
@@ -127,7 +128,7 @@ public class SimulatedAnnealing extends Algorithm{
                 isVisitedAttractionTable[b] = true;
                 atrListToChange.set(a, b);
             }catch (Exception e){
-                //Toast.makeText(getApplicationContext(), "isVisitedAttractionTable.lenght musi wynosić minimum 3", Toast.LENGTH_SHORT).show();
+                Log.d("SimulatedAnnealing","mutate() błąd podczas wymiany wartości na inną");
                 return null;
             }
         }//jeśli wszystkie atrakcje w pełni na liście, to kończymy
@@ -188,10 +189,10 @@ public class SimulatedAnnealing extends Algorithm{
         return atrListToChange;
     }
 
-    public CarSollution findWayMultimodal(int startPoint0, int timeMax, long calculation_time){return null;}
+    //public CarSollution findWayMultimodal(int startPoint0, int timeMax, long calculation_time){return null;}
 
-    //@Override
-    public CarSollution findWayMultimodal(int startPoint0, int timeMaxMin, long calculation_time, Context context) {
+    @Override
+    public CarSollution findWayMultimodal(int startPoint0, int timeMaxMin, long calculation_time){//, Context context) {
         ReadTxtFile fileReader = new ReadTxtFile();
         stop = false;
         int timeMaxS = timeMaxMin*60;
@@ -207,7 +208,7 @@ public class SimulatedAnnealing extends Algorithm{
             e.printStackTrace();
         }
         double temp = carSollution.collectedStars*temp_beg;
-        {
+        /*{
             long startBreak = System.nanoTime();
             long finish = System.nanoTime();
             //timeElapsed = finish - start;
@@ -217,7 +218,7 @@ public class SimulatedAnnealing extends Algorithm{
             fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
             long stopBreak = System.nanoTime();
             start += stopBreak - startBreak;
-        }
+        }*/
 
         do {
             try {
@@ -239,18 +240,19 @@ public class SimulatedAnnealing extends Algorithm{
                 long finish = System.nanoTime();
                 timeElapsed = finish - start;
                 long startBreak = System.nanoTime();
-
-                fileReader.saveToFile(currCarSollution.collectedStars, context, "sa_stars_tune_multi.txt");
-                //fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
-                fileReader.saveToFile(carSollution.collectedStars, context, "sa_best_tune_multi.txt");
-                long stopBreak = System.nanoTime();
-                start += stopBreak - startBreak;
+                /*{
+                    fileReader.saveToFile(currCarSollution.collectedStars, context, "sa_stars_tune_multi.txt");
+                    //fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
+                    fileReader.saveToFile(carSollution.collectedStars, context, "sa_best_tune_multi.txt");
+                    long stopBreak = System.nanoTime();
+                    start += stopBreak - startBreak;
+                }*/
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }while(timeElapsed < calculation_time && temp>0.001 && !stop);
-        fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
+        //fileReader.saveToFile(temp, context, "sa_temp_tune_multi.txt");
         return carSollution;
     }
 
@@ -262,130 +264,138 @@ public class SimulatedAnnealing extends Algorithm{
         for (Iterator<Integer> iter = carSolToChange.visitedAttractions.iterator(); iter.hasNext(); )
             isVisitedAttractionTable[iter.next()] = true;
 
-        int mut_opt = random.nextInt(4);
-        if (mut_opt==0 || mut_opt==4) mut_opt=2;  //0 losowane jest bardzo rzadko, a opisy w internecie są niejednoznaczne czy wypada 4 czy nie
-        if(mut_opt==1 && carSolToChange.visitedAttractions.size()>2){
-            int a = 0;
-            int b = 0;
-            while(a==b) {
-                a = random.nextInt(carSolToChange.visitedAttractions.size() - 2) + 1;
-                b = random.nextInt(carSolToChange.visitedAttractions.size() - 2) + 1;
-                if(a==b && a==1)//nextInt ma problem czasem z wylosowaniem 0 i zwiesza program
-                    b=2;
-            }
-            int buf = carSolToChange.visitedAttractions.get(b);
-            carSolToChange.visitedAttractions.set(b, carSolToChange.visitedAttractions.get(a));
-            carSolToChange.visitedAttractions.set(a, buf);
-        }
-        else if(mut_opt==2 && carSolToChange.visitedAttractions.size()>1 && carSolToChange.visitedAttractions.size() != travelData.visit_time.length)
-        {  //wymiana wartości na nową
-            int a = 1;
-            if (carSolToChange.visitedAttractions.size()>2)
-                a = random.nextInt(carSolToChange.visitedAttractions.size() - 2) + 1;
-            try {
-                int b = random.nextInt(travelData.visit_time.length - 2) + 1;
-                boolean visited = true;
-                while(visited || b==carSolToChange.visitedAttractions.get(0)) {
-                    visited = isVisitedAttractionTable[b];;
-                    if(visited){
-                        if(++b==travelData.visit_time.length)
-                            b=0;
+        try {
+            int mut_opt = random.nextInt(4);
+            if (mut_opt == 0 || mut_opt == 4)
+                mut_opt = 2;  //0 losowane jest bardzo rzadko, a opisy w internecie są niejednoznaczne czy wypada 4 czy nie
+            if (mut_opt == 1 && carSolToChange.visitedAttractions.size() > 2) {
+                try{
+                    int a = 0;
+                    int b = 0;
+                    while (a == b) {
+                        a = random.nextInt(carSolToChange.visitedAttractions.size() - 2) + 1;
+                        b = random.nextInt(carSolToChange.visitedAttractions.size() - 2) + 1;
+                        if (a == b && a == 1)//nextInt ma problem czasem z wylosowaniem 0 i zwiesza program
+                            b = 2;
                     }
+                    int buf = carSolToChange.visitedAttractions.get(b);
+                    carSolToChange.visitedAttractions.set(b, carSolToChange.visitedAttractions.get(a));
+                    carSolToChange.visitedAttractions.set(a, buf);
+                }catch (Exception e){
+                    Log.d("SimulatedAnnealing", "Błąd przy mutacji zmiany kolejności.");
                 }
-                isVisitedAttractionTable[carSolToChange.visitedAttractions.get(a)] = false;
-                isVisitedAttractionTable[b] = true;
-                carSolToChange.visitedAttractions.set(a, b);
-            }catch (Exception e){
-                //Toast.makeText(getApplicationContext(), "isVisitedAttractionTable.lenght musi wynosić minimum 3", Toast.LENGTH_SHORT).show();
-                return null;
-            }
-        }//Zmiana trybu podróży (auto/pieszo) na przeciwny
-        else if(mut_opt==3 && carSolToChange.visitedAttractions.size()>1){
-            int a = 0;
-            if (carSolToChange.visitedAttractions.size()>3)
-                a = random.nextInt(carSolToChange.visitedAttractions.size() - 2);
-            carSolToChange.travelByCar.set(a, !carSolToChange.travelByCar.get(a));
-        }
-        //jeśli wszystkie atrakcje w pełni na liście, to kończymy
-        else if (carSolToChange.visitedAttractions.size() == travelData.visit_time.length){
-            int timeMaxS2 = timeMaxS;
-            timeMaxS2 -= travelData.visit_time[carSolToChange.visitedAttractions.get(0)].floatValue()*60;
-            int start = carSolToChange.visitedAttractions.get(0);
-            int c = start;
-            for(int dest : carSolToChange.visitedAttractions){
-                if(dest==carSolToChange.visitedAttractions.get(0))
-                    continue;
-                timeMaxS2 -= travelData.visit_time[dest]*60;
-                if(carSolToChange.travelByCar.get(c++)){
-                    timeMaxS2 -=  travelData.walking_matrix[start][c] + travelData.car_matrix[c][dest] + Algorithm.CAR_PARKING_TIME;
-                    c = dest;
-                }else
-                    timeMaxS2 -= travelData.walking_matrix[start][dest];
-                start = dest;
-                if (timeMaxS2<=0)
-                    stop = true;
-            }
-        }
-        //jeżeli czas za krótki, by dotrzeć do jakiegokolwiek atrakcji, to kończymy
-        else if(carSolToChange.visitedAttractions.size()==1){
-            int start = carSolToChange.visitedAttractions.get(0);
-            stop = true;
-            for(int dest : carSolToChange.visitedAttractions){
-                if(dest==carSolToChange.visitedAttractions.get(0))
-                    continue;
-                if (timeMaxS>travelData.walking_matrix[start][dest])
-                    stop=false;
-                else if (timeMaxS>travelData.car_matrix[start][dest] + Algorithm.CAR_PARKING_TIME)
-                    stop=false;
-            }
-        }
-
-        //próbujemy dołożyć nowe atrakcje na koniec listy
-        int currentPathTime = travelData.countCurrentPathTimeMultimodal(carSolToChange);
-        if(currentPathTime<timeMaxS){
-            boolean noNew = false;
-            while(!noNew){
-                Integer startPoint = carSolToChange.visitedAttractions.get(carSolToChange.visitedAttractions.size()-1);
-                float best_fitness = 0;
-                boolean trav_by_car = false;
-                Integer nextCity = -1;
-                int c = carSolToChange.getCar();
-
-                for (int i=0; i<isVisitedAttractionTable.length; i++) {
-                    if(isVisitedAttractionTable[i])
-                        continue;
-                    float fitness = travelData.fitness(startPoint, i, timeMaxS-currentPathTime);
-                    if(fitness == 0)
-                        continue;
-                    if (best_fitness < fitness) {
-                        best_fitness = fitness;
-                        nextCity = i;
+            } else if (mut_opt == 2 && carSolToChange.visitedAttractions.size() > 1 && carSolToChange.visitedAttractions.size() != travelData.visit_time.length) {  //wymiana wartości na nową
+                int a = 1;
+                if (carSolToChange.visitedAttractions.size() > 2)
+                    a = random.nextInt(carSolToChange.visitedAttractions.size() - 2) + 1;
+                try {
+                    int b = random.nextInt(travelData.visit_time.length - 2) + 1;
+                    boolean visited = true;
+                    while (visited || b == carSolToChange.visitedAttractions.get(0)) {
+                        visited = isVisitedAttractionTable[b];
+                        ;
+                        if (visited) {
+                            if (++b == travelData.visit_time.length)
+                                b = 0;
+                        }
                     }
-
-                    float fitness_car = travelData.fitness_car(startPoint, i, timeMaxS-currentPathTime, c);
-                    if(fitness_car == 0)
-                        continue;
-                    if (best_fitness < fitness_car) {
-                        best_fitness = fitness_car;
-                        nextCity = i;
-                        c = i;
-                        trav_by_car = true;
-                    }
+                    isVisitedAttractionTable[carSolToChange.visitedAttractions.get(a)] = false;
+                    isVisitedAttractionTable[b] = true;
+                    carSolToChange.visitedAttractions.set(a, b);
+                } catch (Exception e) {
+                    Log.d("SimulatedAnnealing", "isVisitedAttractionTable.lenght musi wynosić minimum 3");
+                    return null;
                 }
-                if(nextCity == -1) {
-                    noNew=true;
-                    break;
-                }
-                isVisitedAttractionTable[nextCity] = true;
-                carSolToChange.visitedAttractions.add(nextCity);
-                carSolToChange.travelByCar.add(trav_by_car);
-                currentPathTime += travelData.visit_time[nextCity]*60;
-                if(trav_by_car)
-                    currentPathTime += travelData.walking_matrix[startPoint][c] + travelData.car_matrix[c][nextCity] + Algorithm.CAR_PARKING_TIME;
-                else
-                    currentPathTime += travelData.walking_matrix[startPoint][nextCity];
-
+            }//Zmiana trybu podróży (auto/pieszo) na przeciwny
+            else if (mut_opt == 3 && carSolToChange.visitedAttractions.size() > 1) {
+                int a = 0;
+                if (carSolToChange.visitedAttractions.size() > 3)
+                    a = random.nextInt(carSolToChange.visitedAttractions.size() - 2);
+                carSolToChange.travelByCar.set(a, !carSolToChange.travelByCar.get(a));
             }
+            //jeśli wszystkie atrakcje w pełni na liście, to kończymy
+            else if (carSolToChange.visitedAttractions.size() == travelData.visit_time.length) {
+                int timeMaxS2 = timeMaxS;
+                timeMaxS2 -= travelData.visit_time[carSolToChange.visitedAttractions.get(0)].floatValue() * 60;
+                int start = carSolToChange.visitedAttractions.get(0);
+                int c = start;
+                for (int dest : carSolToChange.visitedAttractions) {
+                    if (dest == carSolToChange.visitedAttractions.get(0))
+                        continue;
+                    timeMaxS2 -= travelData.visit_time[dest] * 60;
+                    if (carSolToChange.travelByCar.get(c++)) {
+                        timeMaxS2 -= travelData.walking_matrix[start][c] + travelData.car_matrix[c][dest] + Algorithm.CAR_PARKING_TIME;
+                        c = dest;
+                    } else
+                        timeMaxS2 -= travelData.walking_matrix[start][dest];
+                    start = dest;
+                    if (timeMaxS2 <= 0)
+                        stop = true;
+                }
+            }
+            //jeżeli czas za krótki, by dotrzeć do jakiegokolwiek atrakcji, to kończymy
+            else if (carSolToChange.visitedAttractions.size() == 1) {
+                int start = carSolToChange.visitedAttractions.get(0);
+                stop = true;
+                for (int dest : carSolToChange.visitedAttractions) {
+                    if (dest == carSolToChange.visitedAttractions.get(0))
+                        continue;
+                    if (timeMaxS > travelData.walking_matrix[start][dest])
+                        stop = false;
+                    else if (timeMaxS > travelData.car_matrix[start][dest] + Algorithm.CAR_PARKING_TIME)
+                        stop = false;
+                }
+            }
+        }catch (Exception e){
+            Log.d("SimulatedAnnealing", "Błąd przy mutacji.");
+        }
+
+        try {
+            //próbujemy dołożyć nowe atrakcje na koniec listy
+            int currentPathTime = travelData.countCurrentPathTimeMultimodal(carSolToChange);
+            if (currentPathTime < timeMaxS) {
+                boolean noNew = false;
+                while (!noNew) {
+                    Integer startPoint = carSolToChange.visitedAttractions.get(carSolToChange.visitedAttractions.size() - 1);
+                    float best_fitness = 0;
+                    boolean trav_by_car = false;
+                    Integer nextCity = -1;
+                    int c = carSolToChange.getCar();
+
+                    for (int i = 0; i < isVisitedAttractionTable.length; i++) {
+                        if (isVisitedAttractionTable[i])
+                            continue;
+                        float fitness = travelData.fitness(startPoint, i, timeMaxS - currentPathTime);
+                        if (best_fitness < fitness) {
+                            best_fitness = fitness;
+                            nextCity = i;
+                        }
+
+                        float fitness_car = travelData.fitness_car(startPoint, i, timeMaxS - currentPathTime, c);
+                        if (best_fitness < fitness_car) {
+                            best_fitness = fitness_car;
+                            nextCity = i;
+                            c = i;
+                            trav_by_car = true;
+                        }
+                    }
+                    if (nextCity == -1) {
+                        noNew = true;
+                        break;
+                    }
+                    isVisitedAttractionTable[nextCity] = true;
+                    carSolToChange.visitedAttractions.add(nextCity);
+                    carSolToChange.travelByCar.add(trav_by_car);
+                    currentPathTime += travelData.visit_time[nextCity] * 60;
+                    if (trav_by_car)
+                        currentPathTime += travelData.walking_matrix[startPoint][c] + travelData.car_matrix[c][nextCity] + Algorithm.CAR_PARKING_TIME;
+                    else
+                        currentPathTime += travelData.walking_matrix[startPoint][nextCity];
+
+                }
+            }
+        }catch (Exception e){
+            Log.d("SimulatedAnnealing", "Błąd przy uzupełnianiu po mutacji.");
         }
 
         carSolToChange.collectedStars = travelData.fitness4listOfAttractionMultimodal(carSolToChange, timeMaxS);
@@ -393,5 +403,77 @@ public class SimulatedAnnealing extends Algorithm{
         return carSolToChange;
     }
 
+
+    public float findWayBaldwin(int startPoint0, int timeMaxMin, long calculation_time, Context context){
+        ReadTxtFile fileReader = new ReadTxtFile();
+        stop = false;
+        int timeMaxS = timeMaxMin*60;
+        long start = System.nanoTime();
+        long timeElapsed;
+        calculation_time *= 1000000000;
+        //RandomAlg alg = new RandomAlg(travelData);
+        Greedy alg = new Greedy(travelData);
+        float collected_stars_no_fihc = alg.findWay(startPoint0, timeMaxMin);
+        double temp = collectedStars*temp_beg;
+        FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);
+
+        ////strojenie
+        collected_stars_no_fihc = travelData.fitness4listOfAttraction(alg.getVisitedAttractions(), timeMaxS);
+        ////
+
+        visitedAttractions = fihc.improve(alg.getVisitedAttractions(), timeMaxMin);
+        currentVisitedAttr = (ArrayList<Integer>) visitedAttractions.clone();
+        float currCollectedStars = travelData.fitness4listOfAttraction(visitedAttractions, timeMaxS);
+        collectedStars = currCollectedStars;
+
+        ////strojenie
+        logTune(collected_stars_no_fihc, currCollectedStars, context);
+        fileReader.saveToFile(temp, context, "bald_temp_tune_single.txt");
+        /////
+
+        start += logTune(collected_stars_no_fihc, currCollectedStars, context);
+        do {
+            ArrayList<Integer> newPath = (ArrayList<Integer>)currentVisitedAttr.clone();
+            mutate(newPath, timeMaxS);
+            {
+                collected_stars_no_fihc = travelData.fitness4listOfAttraction(newPath, timeMaxS);
+            }
+            fihc.improve(newPath, timeMaxMin);
+            float newCollectedStars = travelData.fitness4listOfAttraction(newPath, timeMaxS);
+            if (newCollectedStars > currCollectedStars) {
+                if(newCollectedStars>collectedStars){
+                    collectedStars = newCollectedStars;
+                    visitedAttractions = (ArrayList<Integer>)newPath.clone();
+                }
+                currCollectedStars = newCollectedStars;
+                currentVisitedAttr = newPath;
+                start += logTune(collected_stars_no_fihc, currCollectedStars, context);
+            }else{
+                double acc_probability = Math.exp((newCollectedStars - currCollectedStars)/temp);
+                double r = random.nextDouble();
+                if(r<acc_probability) {
+                    currentVisitedAttr = newPath;
+                    currCollectedStars = newCollectedStars;
+                    start += logTune(collected_stars_no_fihc, currCollectedStars, context);
+                }
+            }
+            temp *= boltzman;
+            long finish = System.nanoTime();
+            timeElapsed = finish - start;
+        }while(timeElapsed < calculation_time && temp>0.001 && !stop);
+        fileReader.saveToFile(temp, context, "bald_temp_tune_single.txt");
+        return collectedStars;
+    }
+
+    long logTune(float collected_stars_no_fihc, float currCollectedStars, Context context){
+        ReadTxtFile fileReader = new ReadTxtFile();
+        long startBreak = System.nanoTime();
+        fileReader.saveToFile(collected_stars_no_fihc, context, "bald_no_fihc_tune_single.txt");
+        fileReader.saveToFile(currCollectedStars, context, "bald_stars_tune_single.txt");
+        //fileReader.saveToFile(timeElapsed/1000000000.0, context, "sa_time_tune_single.txt");
+        fileReader.saveToFile(collectedStars, context, "bald_best_tune_single.txt");
+        long stopBreak = System.nanoTime();
+        return stopBreak - startBreak;
+    }
 
 }

@@ -10,9 +10,9 @@ public class CarSollution implements Cloneable{
     public ArrayList<Integer> visitedAttractions = new ArrayList<Integer>();
     public float collectedStars;
 
-    public CarSollution(@NonNull ArrayList<Boolean> travByCar, ArrayList<Integer> visitedAtt, float stars){
+    public CarSollution(@NonNull ArrayList<Boolean> travByCar, @NonNull ArrayList<Integer> visitedAtt, float stars){
         travelByCar= (ArrayList<Boolean>) travByCar.clone();
-        visitedAttractions = visitedAtt;
+        visitedAttractions = (ArrayList<Integer>) visitedAtt.clone();
         collectedStars = stars;
     }
 

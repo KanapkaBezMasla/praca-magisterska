@@ -16,8 +16,8 @@ public class Experiment {
     private final String [][] datasets = {small_datasets, avg_datasets, big_datasets};
     private final String [][] datasets_car = {small_datasets_car, avg_datasets_car, big_datasets_car};
     private final int [] dataset_sizes = {13, 26, 52};
-    private final int [] travel_time = {60, 120, 240, 480};
-    private final long [] measure_time = {1}; //{1, 3, 5, 10};
+    private final int [] travel_time = {480};//{60, 120, 240, 480};
+    private final long [] measure_time = {10}; //{1, 3, 5, 10};
 
     private Integer [] visit_time2;
     private Integer [] stars_rating2;
@@ -237,6 +237,24 @@ public class Experiment {
         }
     }
 
+    public void sa_tune_multi(double bolt, double temp_beg, long calculation_time, String filename){
+        Integer [][] walk_matrix, car_matrix;
+        walk_matrix = fileReader.readMatrix(context, "data_52.txt", 52);
+        car_matrix = fileReader.readMatrix(context, "data_car_52.txt", 52);
+        TravelData travelData = new TravelData(walk_matrix, visit_time2, stars_rating2, car_matrix);
+
+        for (int i : startPoints) {
+            float rand_stars_avg = 0;
+            //for(int j =0; j < 10; j++) {
+            SimulatedAnnealing sa = new SimulatedAnnealing(travelData, bolt, temp_beg);
+            CarSollution res = sa.findWayMultimodal(i, 240, calculation_time);
+            //rand_stars_avg += res;
+            //}
+
+            fileReader.saveToFile(res.collectedStars, context, filename);
+        }
+    }
+
     public void sa_single() {
         for (long measure_t : measure_time) {
             for (int a = 0; a < 1; a++) {
@@ -261,21 +279,67 @@ public class Experiment {
                             float rand_stars_best = 0;
                             int iterations = 3;
                             for(int j=0; j<iterations; j++) {
-                                SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999855, 10);
-                                float res = 0;//sa.findWay(i, time, measure_t);
+                                SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999935, 10);
+                                float res = sa.findWay(i, time, measure_t);
                                 rand_stars_avg += res;
                                 if (rand_stars_best < res)
                                     rand_stars_best = res;
                             }
-                            fileReader.saveToFile(rand_stars_avg/iterations, context, "sa_stars_avg_single10_male.txt");
-                            fileReader.saveToFile(rand_stars_best, context, "sa_stars_best_single10_male.txt");
+                            fileReader.saveToFile(rand_stars_avg/iterations, context, "sa_stars_avg_single_m.txt");
+                            fileReader.saveToFile(rand_stars_best, context, "sa_stars_best_single_m.txt");
                         }
                     }
-                    fileReader.saveToFile("\n", context, "sa_stars_avg_single10_male.txt");
-                    fileReader.saveToFile("\n", context, "sa_stars_best_single10_male.txt");
+                    fileReader.saveToFile("\n", context, "sa_stars_avg_single_m.txt");
+                    fileReader.saveToFile("\n", context, "sa_stars_best_single_m.txt");
                 }
-                fileReader.saveToFile("\n=============\n", context, "sa_stars_avg_single10_male.txt");
-                fileReader.saveToFile("\n=============\n", context, "sa_stars_best_single10_male.txt");
+                fileReader.saveToFile("\n=============\n", context, "sa_stars_avg_single_m.txt");
+                fileReader.saveToFile("\n=============\n", context, "sa_stars_best_single_m.txt");
+            }
+        }
+    }
+
+    public void sa_multi() {
+        for (long measure_t : measure_time) {
+            for (int a = 0; a < 3; a++) {
+                for (int time : travel_time) {
+                    int b = 0;
+                    for (int c=0; c<datasets[a].length; c++) {
+                        String dataset = datasets[a][c];
+                        String dataset_car = datasets_car[a][c];
+                        Integer[] visit_time = new Integer[dataset_sizes[a]];
+                        for (int i = b * dataset_sizes[a], j = 0; i < (b + 1) * dataset_sizes[a]; i++, j++) {
+                            visit_time[j] = visit_time2[i];
+                        }
+                        Integer[] stars_rating = new Integer[dataset_sizes[a]];
+                        for (int i = b * dataset_sizes[a], j = 0; i < (b + 1) * dataset_sizes[a]; i++, j++) {
+                            stars_rating[j] = stars_rating2[i];
+                        }
+                        b++;
+
+                        Integer[][] walk_matrix, car_matrix;
+                        walk_matrix = fileReader.readMatrix(context, dataset, dataset_sizes[a]);
+                        car_matrix = fileReader.readMatrix(context, dataset_car, dataset_sizes[a]);
+                        TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating, car_matrix);
+                        for (int i : startPointsTables[a]) {
+                            float rand_stars_avg = 0;
+                            float rand_stars_best = 0;
+                            int iterations = 3;
+                            for(int j=0; j<iterations; j++) {
+                                SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999935, 10);
+                                CarSollution cs = sa.findWayMultimodal(i, time, measure_t);
+                                rand_stars_avg += cs.collectedStars;
+                                if (rand_stars_best < cs.collectedStars)
+                                    rand_stars_best = cs.collectedStars;
+                            }
+                            fileReader.saveToFile(rand_stars_avg/iterations, context, "sa_stars_avg_mul.txt");
+                            fileReader.saveToFile(rand_stars_best, context, "sa_stars_best_mul.txt");
+                        }
+                    }
+                    fileReader.saveToFile("\n", context, "sa_stars_avg_mul.txt");
+                    fileReader.saveToFile("\n", context, "sa_stars_best_mul.txt");
+                }
+                fileReader.saveToFile("\n=============\n", context, "sa_stars_avg_mul.txt");
+                fileReader.saveToFile("\n=============\n", context, "sa_stars_best_mul.txt");
             }
         }
     }

@@ -71,6 +71,22 @@ public class TravelData {
         return collectedStars;
     }
 
+    public float fitness4listOfAttractionNoCut(@NonNull ArrayList<Integer> visitedAttractions, int timeMaxS){
+        int start = visitedAttractions.get(0);
+        float collectedStars = stars[start].floatValue();
+        timeMaxS -= visit_time[start].floatValue()*60;
+        for(int dest : visitedAttractions){
+            if(dest==start)
+                continue;
+            collectedStars+=fitness(start,dest, timeMaxS);
+            timeMaxS -= visit_time[dest].floatValue()*60 + walking_matrix[start][dest].floatValue();
+            start = dest;
+            if (timeMaxS<=0)
+                return collectedStars;
+        }
+        return collectedStars;
+    }
+
     public int countCurrentPathTime(@NonNull ArrayList<Integer> visitedAttractions){
         int currentPathTime = 0;
         int prevAttraction = visitedAttractions.get(0);
@@ -84,15 +100,18 @@ public class TravelData {
     /////////////////////////MULTI//////////////////////////////////
 
     public float fitness_car(int start, int destination, int time_leftS, int car){
-        if (car_matrix[car][destination] + Algorithm.CAR_PARKING_TIME + walking_matrix[start][car] > time_leftS)
+        try {
+            if (car_matrix[car][destination] + Algorithm.CAR_PARKING_TIME + walking_matrix[start][car] > time_leftS)
+                return 0;
+            float time4attraction = visit_time[destination].floatValue() * 60 + car_matrix[car][destination].floatValue() + walking_matrix[start][car].floatValue() + Algorithm.CAR_PARKING_TIME;
+            if (time4attraction > time_leftS) {
+                float penalty = (time4attraction - time_leftS) * stars[destination].floatValue() / time4attraction;
+                return stars[destination].floatValue() - penalty;
+            } else
+                return stars[destination].floatValue();
+        }catch (Exception exception){
             return 0;
-        float time4attraction = visit_time[destination].floatValue()*60 + car_matrix[car][destination].floatValue() + walking_matrix[start][car].floatValue() + Algorithm.CAR_PARKING_TIME;
-        if (time4attraction > time_leftS){
-            float penalty = (time4attraction - time_leftS)*stars[destination].floatValue()/time4attraction;
-            return stars[destination].floatValue() - penalty;
         }
-        else
-            return stars[destination].floatValue();
     }
 
     public float fitness_per_s_car(int start, int destination, int time_left, int car){
@@ -129,37 +148,41 @@ public class TravelData {
     }
 
     public float fitness4listOfAttractionMultimodal(@NonNull CarSollution cs, int timeMaxS){
-        int start = cs.visitedAttractions.get(0);
-        float collectedStars = stars[start].floatValue();
-        timeMaxS -= visit_time[start].floatValue()*60;
-        int car = cs.visitedAttractions.get(0);
-        int beginCutting = -1;
-        for(int i=0; i<cs.visitedAttractions.size(); i++){
-            int dest = cs.visitedAttractions.get(i);
-            if (timeMaxS<=0){
-                beginCutting = cs.visitedAttractions.indexOf(dest);
-                break;
+        try {
+            int start = cs.visitedAttractions.get(0);
+            float collectedStars = stars[start].floatValue();
+            timeMaxS -= visit_time[start].floatValue() * 60;
+            int car = cs.visitedAttractions.get(0);
+            int beginCutting = -1;
+            for (int i = 0; i < cs.visitedAttractions.size(); i++) {
+                int dest = cs.visitedAttractions.get(i);
+                if (timeMaxS <= 0) {
+                    beginCutting = cs.visitedAttractions.indexOf(dest);
+                    break;
+                }
+                if (dest == start)
+                    continue;
+                boolean byCar = cs.travelByCar.get(i - 1);
+                collectedStars += (byCar) ? fitness_car(start, dest, timeMaxS, car) : fitness(start, dest, timeMaxS);
+                timeMaxS -= visit_time[dest].floatValue() * 60;
+                if (byCar) {
+                    timeMaxS -= walking_matrix[start][car].floatValue() + car_matrix[car][dest].floatValue() + Algorithm.CAR_PARKING_TIME.floatValue();
+                    car = dest;
+                } else
+                    timeMaxS -= walking_matrix[start][dest].floatValue();
+                start = dest;
             }
-            if(dest==start)
-                continue;
-            boolean byCar = cs.travelByCar.get(i-1);
-            collectedStars+=(byCar) ? fitness_car(start, dest, timeMaxS, car) : fitness(start,dest, timeMaxS);
-            timeMaxS -= visit_time[dest].floatValue()*60;
-            if(byCar) {
-                timeMaxS -= walking_matrix[start][car].floatValue() + car_matrix[car][dest].floatValue() + Algorithm.CAR_PARKING_TIME.floatValue();
-                car = dest;
-            }else
-                timeMaxS -= walking_matrix[start][dest].floatValue();
-            start = dest;
-        }
-        if(beginCutting!=-1){
-            int j=beginCutting;
-            while(j<cs.travelByCar.size()){
-                cs.visitedAttractions.remove(j);
-                cs.travelByCar.remove(j-1);
+            if (beginCutting != -1) {
+                int j = beginCutting;
+                while (j < cs.visitedAttractions.size()) {
+                    cs.visitedAttractions.remove(j);
+                    cs.travelByCar.remove(j - 1);
+                }
             }
+            return collectedStars;
+        }catch (Exception e){
+            return 0;
         }
-        return collectedStars;
     }
 
 
