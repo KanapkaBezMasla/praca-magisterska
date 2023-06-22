@@ -181,7 +181,7 @@ public class SimulatedAnnealing extends Algorithm{
                     break;
                 }
                 isVisitedAttractionTable[nextCity] = true;
-                visitedAttractions.add(nextCity);
+                atrListToChange.add(nextCity);
                 currentPathTime += travelData.visit_time[nextCity]*60 + travelData.walking_matrix[startPoint][nextCity];
             }
         }
@@ -404,7 +404,7 @@ public class SimulatedAnnealing extends Algorithm{
     }
 
 
-    public float findWayBaldwin(int startPoint0, int timeMaxMin, long calculation_time, Context context){
+    public float findWayBaldwin(int startPoint0, int timeMaxMin, long calculation_time){//, Context context){
         ReadTxtFile fileReader = new ReadTxtFile();
         stop = false;
         int timeMaxS = timeMaxMin*60;
@@ -413,55 +413,57 @@ public class SimulatedAnnealing extends Algorithm{
         calculation_time *= 1000000000;
         //RandomAlg alg = new RandomAlg(travelData);
         Greedy alg = new Greedy(travelData);
-        float collected_stars_no_fihc = alg.findWay(startPoint0, timeMaxMin);
-        double temp = collectedStars*temp_beg;
+        float currCollectedStars = alg.findWay(startPoint0, timeMaxMin);
+        currentVisitedAttr = (ArrayList<Integer>) alg.getVisitedAttractions().clone();
         FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);
 
+        //Baldwin
+        visitedAttractions = (ArrayList<Integer>) fihc.improve(alg.getVisitedAttractions(), timeMaxMin).clone();
+        collectedStars = fihc.collectedStars;
+
+        double temp = collectedStars*temp_beg;
+
+        int n=0;
         ////strojenie
-        collected_stars_no_fihc = travelData.fitness4listOfAttraction(alg.getVisitedAttractions(), timeMaxS);
-        ////
-
-        visitedAttractions = fihc.improve(alg.getVisitedAttractions(), timeMaxMin);
-        currentVisitedAttr = (ArrayList<Integer>) visitedAttractions.clone();
-        float currCollectedStars = travelData.fitness4listOfAttraction(visitedAttractions, timeMaxS);
-        collectedStars = currCollectedStars;
-
-        ////strojenie
-        logTune(collected_stars_no_fihc, currCollectedStars, context);
-        fileReader.saveToFile(temp, context, "bald_temp_tune_single.txt");
-        /////
-
-        start += logTune(collected_stars_no_fihc, currCollectedStars, context);
+        //fileReader.saveToFile(temp, context, "bald_temp_tune_single.txt");
+        //start += logTune(currCollectedStars, collectedStars, context);
+        //////////
         do {
             ArrayList<Integer> newPath = (ArrayList<Integer>)currentVisitedAttr.clone();
             mutate(newPath, timeMaxS);
+            float collected_stars_no_fihc = 0;
             {
-                collected_stars_no_fihc = travelData.fitness4listOfAttraction(newPath, timeMaxS);
+                collected_stars_no_fihc = travelData.fitness4listOfAttractionNoCut(newPath, timeMaxS);
             }
             fihc.improve(newPath, timeMaxMin);
-            float newCollectedStars = travelData.fitness4listOfAttraction(newPath, timeMaxS);
-            if (newCollectedStars > currCollectedStars) {
-                if(newCollectedStars>collectedStars){
-                    collectedStars = newCollectedStars;
+            if (fihc.collectedStars > currCollectedStars) {
+                if(fihc.collectedStars>collectedStars){
+                    collectedStars = fihc.collectedStars;
                     visitedAttractions = (ArrayList<Integer>)newPath.clone();
                 }
-                currCollectedStars = newCollectedStars;
+                currCollectedStars = fihc.collectedStars;
                 currentVisitedAttr = newPath;
-                start += logTune(collected_stars_no_fihc, currCollectedStars, context);
+                /*if(n++>=0) {
+                    start += logTune(collected_stars_no_fihc, currCollectedStars, context);
+                    n=0;
+                }*/
             }else{
-                double acc_probability = Math.exp((newCollectedStars - currCollectedStars)/temp);
+                double acc_probability = Math.exp((fihc.collectedStars - currCollectedStars)/temp);
                 double r = random.nextDouble();
                 if(r<acc_probability) {
                     currentVisitedAttr = newPath;
-                    currCollectedStars = newCollectedStars;
-                    start += logTune(collected_stars_no_fihc, currCollectedStars, context);
+                    currCollectedStars = fihc.collectedStars;
+                    /*if(n++>=0) {
+                        start += logTune(collected_stars_no_fihc, currCollectedStars, context);
+                        n=0;
+                    }*/
                 }
             }
             temp *= boltzman;
             long finish = System.nanoTime();
             timeElapsed = finish - start;
-        }while(timeElapsed < calculation_time && temp>0.001 && !stop);
-        fileReader.saveToFile(temp, context, "bald_temp_tune_single.txt");
+        }while(timeElapsed < calculation_time && temp>0.0001 && !stop);
+        //fileReader.saveToFile(temp, context, "bald_temp_tune_single.txt");
         return collectedStars;
     }
 

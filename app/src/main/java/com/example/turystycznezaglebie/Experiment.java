@@ -4,7 +4,7 @@ import android.content.Context;
 
 public class Experiment {
     private final int [] startPoints = {0, 7, 13, 20, 26, 33, 39, 46};
-    private final int [] startPoints_avg = {0, 7, 13, 20};
+    private final int [] startPoints_avg = { 7, 13, 20};
     private final int [] startPoints_small = {0, 7};
     private final int [][] startPointsTables = {startPoints_small, startPoints_avg, startPoints};
     private final String [] small_datasets = {"data13A.txt", "data13B.txt", "data13C.txt", "data13D.txt"};
@@ -16,7 +16,7 @@ public class Experiment {
     private final String [][] datasets = {small_datasets, avg_datasets, big_datasets};
     private final String [][] datasets_car = {small_datasets_car, avg_datasets_car, big_datasets_car};
     private final int [] dataset_sizes = {13, 26, 52};
-    private final int [] travel_time = {480};//{60, 120, 240, 480};
+    private final int [] travel_time = {60, 120, 240, 480};
     private final long [] measure_time = {10}; //{1, 3, 5, 10};
 
     private Integer [] visit_time2;
@@ -340,6 +340,69 @@ public class Experiment {
                 }
                 fileReader.saveToFile("\n=============\n", context, "sa_stars_avg_mul.txt");
                 fileReader.saveToFile("\n=============\n", context, "sa_stars_best_mul.txt");
+            }
+        }
+    }
+
+    public void bald_tune_single(double bolt, double temp_beg, long calculation_time, String filename){
+        fileReader.saveToFile(bolt, context, filename);
+        fileReader.saveToFile("\n", context, filename);
+        Integer [][] walk_matrix;
+        walk_matrix = fileReader.readMatrix(context, "data_52.txt", 52);
+        TravelData travelData = new TravelData(walk_matrix, visit_time2, stars_rating2);
+
+        for (int i : startPoints) {
+            float rand_stars_avg = 0;
+            for(int j =0; j < 3; j++) {
+                SimulatedAnnealing sa = new SimulatedAnnealing(travelData, bolt, temp_beg);
+                float res = sa.findWay(i, 240, calculation_time);
+                rand_stars_avg += res;
+            }
+
+            fileReader.saveToFile(rand_stars_avg/5, context, filename);
+        }
+        fileReader.saveToFile("\n=============\n", context, filename);
+    }
+
+    public void bald_single() {
+        for (long measure_t : measure_time) {
+            for (int a = 0; a < 1; a++) {
+                for (int time : travel_time) {
+                    int b = 0;
+                    for (String dataset : datasets[a]) {
+                        Integer[] visit_time = new Integer[dataset_sizes[a]];
+                        for (int i = b * dataset_sizes[a], j = 0; i < (b + 1) * dataset_sizes[a]; i++, j++) {
+                            visit_time[j] = visit_time2[i];
+                        }
+                        Integer[] stars_rating = new Integer[dataset_sizes[a]];
+                        for (int i = b * dataset_sizes[a], j = 0; i < (b + 1) * dataset_sizes[a]; i++, j++) {
+                            stars_rating[j] = stars_rating2[i];
+                        }
+                        b++;
+
+                        Integer[][] walk_matrix;
+                        walk_matrix = fileReader.readMatrix(context, dataset, dataset_sizes[a]);
+                        TravelData travelData = new TravelData(walk_matrix, visit_time, stars_rating);
+                        for (int i : startPointsTables[a]) {
+                            float rand_stars_avg = 0;
+                            float rand_stars_best = 0;
+                            int iterations = 3;
+                            for(int j=0; j<iterations; j++) {
+                                SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99999, 1);
+                                float res = sa.findWayBaldwin(i, time, measure_t);
+                                rand_stars_avg += res;
+                                if (rand_stars_best < res)
+                                    rand_stars_best = res;
+                            }
+                            fileReader.saveToFile(rand_stars_avg/iterations, context, "bald_avg_single2m2.txt");
+                            fileReader.saveToFile(rand_stars_best, context, "bald_best_single2m2.txt");
+                        }
+                    }
+                    fileReader.saveToFile("\n", context, "bald_avg_single2m2.txt");
+                    fileReader.saveToFile("\n", context, "bald_best_single2m2.txt");
+                }
+                fileReader.saveToFile("\n=============\n", context, "bald_avg_single2m2.txt");
+                fileReader.saveToFile("\n=============\n", context, "bald_best_single2m2.txt");
             }
         }
     }

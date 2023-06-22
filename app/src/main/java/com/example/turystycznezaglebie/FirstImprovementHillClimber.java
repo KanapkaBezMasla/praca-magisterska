@@ -103,7 +103,7 @@ public class FirstImprovementHillClimber {
                                     newVisitedAttractions.set(i2, bj);
                                     newVisitedAttractions.set(j2, bi);
                                     float newFitness = travelData.fitness4listOfAttractionNoCut(newVisitedAttractions, timeMax);
-                                    if(newFitness>collectedStars) {
+                                    if(newFitness>=collectedStars) {
                                         visitedAttractions.set(i2, bj);
                                         visitedAttractions.set(j2, bi);
                                         currentPathTime += newTime - prevTime;

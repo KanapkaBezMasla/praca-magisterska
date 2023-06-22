@@ -45,21 +45,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         ex.sa_tune_multi(0.99999935, 1.3, 10, "35_13_10_multi.txt");
         ex.sa_tune_multi(0.99999935, 0.7, 10, "35_07_10_multi.txt");
 */
-        //ex.greedy_multi();
+        //ex.bald_tune_single(0.9, 1, 10, "tune_bald.txt");
+        //ex.bald_tune_single(0.99, 1, 10, "tune_bald.txt");
+        //ex.bald_tune_single(0.999, 1, 10, "tune_bald.txt");
+        //ex.bald_tune_single(0.99999, 0.8, 10, "tune_bald2.txt");
+        //ex.bald_tune_single(0.99999, 1.2, 10, "tune_bald2.txt");
+
+        ex.bald_single();
         //ex.sa_single();
         //ex.sa_multi();
         //ex.random_multi();
         Greedy gr = new Greedy(travelData);
         //CarSollution cs =  gr.findWayMultimodal(0, 240);
-        gr.findWay(7, 240);
-        SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 99999935, 1);
+        //gr.findWay(7, 240);
+        SimulatedAnnealing sa = new SimulatedAnnealing(travelData, 0.99, 1);
         //CarSollution cs = sa.findWayMultimodal(0, 240, 10, getApplicationContext());
-        //float res = sa.findWayBaldwin(0, 240, 1000, getApplicationContext());
+        //float res = sa.findWayBaldwin(0, 240, 10, getApplicationContext());
+
         RandomAlg randomAlg = new RandomAlg(travelData);
         //CarSollution cs = randomAlg.findWayMultimodal(0, 120, 5);
-        float res = travelData.fitness4listOfAttractionNoCut(gr.visitedAttractions, 240*60);
-        FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);
-        fihc.improve(gr.getVisitedAttractions(),240);
+        //FirstImprovementHillClimber fihc = new FirstImprovementHillClimber(travelData);
+        //fihc.improve(gr.getVisitedAttractions(),240);
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
